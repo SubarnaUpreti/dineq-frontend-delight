@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Check, Clock, MapPin, Phone, HelpCircle } from "lucide-react";
+import { ArrowLeft, Check, Clock, MapPin, Phone, HelpCircle, Receipt, ChefHat, ShoppingBag, type LucideIcon } from "lucide-react";
 import { useOrders } from "@/lib/store/orders";
 import { formatRs } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -10,11 +10,11 @@ export const Route = createFileRoute("/orders/$id")({
   component: OrderTrackingPage,
 });
 
-const STEPS: { key: OrderStatus; label: string; emoji: string }[] = [
-  { key: "placed", label: "Order placed", emoji: "📝" },
-  { key: "accepted", label: "Restaurant accepted", emoji: "✅" },
-  { key: "preparing", label: "Preparing your order", emoji: "👨‍🍳" },
-  { key: "ready", label: "Ready for you", emoji: "🛍️" },
+const STEPS: { key: OrderStatus; label: string; Icon: LucideIcon }[] = [
+  { key: "placed", label: "Order placed", Icon: Receipt },
+  { key: "accepted", label: "Restaurant accepted", Icon: Check },
+  { key: "preparing", label: "Preparing your order", Icon: ChefHat },
+  { key: "ready", label: "Ready for you", Icon: ShoppingBag },
 ];
 
 function OrderTrackingPage() {
