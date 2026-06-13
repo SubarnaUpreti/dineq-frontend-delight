@@ -1,0 +1,618 @@
+import type { Category, Promo, Restaurant, MenuItem, Order } from "./types";
+
+// Use Unsplash for realistic food photography (CDN, no key needed)
+const img = (id: string, w = 800, h = 600) =>
+  `https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
+
+export const categories: Category[] = [
+  { id: "momo", label: "Momo", emoji: "🥟", tint: "oklch(0.95 0.04 70)" },
+  { id: "pizza", label: "Pizza", emoji: "🍕", tint: "oklch(0.95 0.05 40)" },
+  { id: "burger", label: "Burger", emoji: "🍔", tint: "oklch(0.95 0.05 80)" },
+  { id: "coffee", label: "Coffee", emoji: "☕", tint: "oklch(0.93 0.04 60)" },
+  { id: "sushi", label: "Sushi", emoji: "🍣", tint: "oklch(0.94 0.04 20)" },
+  { id: "biryani", label: "Biryani", emoji: "🍛", tint: "oklch(0.94 0.06 70)" },
+  { id: "bakery", label: "Bakery", emoji: "🥐", tint: "oklch(0.95 0.04 85)" },
+  { id: "drinks", label: "Drinks", emoji: "🧋", tint: "oklch(0.94 0.05 320)" },
+];
+
+export const promos: Promo[] = [
+  { code: "DINEQ10", label: "10% off your order", kind: "percent", value: 10, max: 200 },
+  { code: "FLAT100", label: "Flat Rs. 100 off above Rs. 600", kind: "flat", value: 100, minOrder: 600 },
+  { code: "FIRST50", label: "Flat Rs. 50 off — first order", kind: "flat", value: 50 },
+];
+
+export const restaurants: Restaurant[] = [
+  {
+    id: "momo-house",
+    name: "Momo House",
+    tagline: "Steaming hot Himalayan dumplings since 2014",
+    cover: img("photo-1496116218417-1a781b1c416c", 1200, 800),
+    logo: img("photo-1546069901-ba9599a7e63c", 200, 200),
+    rating: 4.7,
+    reviewCount: 1284,
+    prepMinutes: [15, 20],
+    cuisines: ["Nepali", "Tibetan", "Asian"],
+    pickup: true,
+    dineIn: true,
+    open: true,
+    hours: "10:00 AM – 10:00 PM",
+    minOrder: 200,
+    serviceChargePct: 10,
+    taxPct: 13,
+    categories: ["Popular", "Steamed Momo", "Fried Momo", "Sides", "Drinks"],
+    distanceKm: 0.8,
+  },
+  {
+    id: "fornello",
+    name: "Fornello Pizzeria",
+    tagline: "Wood-fired Neapolitan pizza",
+    cover: img("photo-1513104890138-7c749659a591", 1200, 800),
+    logo: img("photo-1565299624946-b28f40a0ae38", 200, 200),
+    rating: 4.6,
+    reviewCount: 932,
+    prepMinutes: [20, 28],
+    cuisines: ["Italian", "Pizza"],
+    pickup: true,
+    dineIn: true,
+    open: true,
+    hours: "11:00 AM – 11:00 PM",
+    minOrder: 400,
+    serviceChargePct: 10,
+    taxPct: 13,
+    categories: ["Popular", "Pizza", "Pasta", "Sides", "Desserts"],
+    distanceKm: 1.4,
+  },
+  {
+    id: "patty-co",
+    name: "Patty & Co.",
+    tagline: "Smash burgers, hand-cut fries",
+    cover: img("photo-1568901346375-23c9450c58cd", 1200, 800),
+    logo: img("photo-1571091718767-18b5b1457add", 200, 200),
+    rating: 4.5,
+    reviewCount: 612,
+    prepMinutes: [12, 18],
+    cuisines: ["American", "Burgers"],
+    pickup: true,
+    dineIn: false,
+    open: true,
+    hours: "12:00 PM – 11:00 PM",
+    minOrder: 350,
+    serviceChargePct: 0,
+    taxPct: 13,
+    categories: ["Popular", "Burgers", "Sides", "Shakes"],
+    distanceKm: 2.1,
+  },
+  {
+    id: "ember-coffee",
+    name: "Ember Coffee Roasters",
+    tagline: "Specialty single-origin coffee + brunch",
+    cover: img("photo-1442512595331-e89e73853f31", 1200, 800),
+    logo: img("photo-1495474472287-4d71bcdd2085", 200, 200),
+    rating: 4.8,
+    reviewCount: 487,
+    prepMinutes: [8, 14],
+    cuisines: ["Coffee", "Brunch", "Bakery"],
+    pickup: true,
+    dineIn: true,
+    open: true,
+    hours: "7:00 AM – 8:00 PM",
+    minOrder: 150,
+    serviceChargePct: 5,
+    taxPct: 13,
+    categories: ["Popular", "Espresso", "Filter", "Brunch", "Pastries"],
+    distanceKm: 0.4,
+  },
+  {
+    id: "ohana-sushi",
+    name: "Ohana Sushi Bar",
+    tagline: "Hand-rolled nigiri and rolls",
+    cover: img("photo-1579871494447-9811cf80d66c", 1200, 800),
+    logo: img("photo-1553621042-f6e147245754", 200, 200),
+    rating: 4.6,
+    reviewCount: 354,
+    prepMinutes: [22, 30],
+    cuisines: ["Japanese", "Sushi"],
+    pickup: true,
+    dineIn: true,
+    open: false,
+    hours: "5:00 PM – 11:00 PM",
+    minOrder: 600,
+    serviceChargePct: 10,
+    taxPct: 13,
+    categories: ["Popular", "Nigiri", "Rolls", "Sashimi", "Sides"],
+    distanceKm: 3.2,
+  },
+  {
+    id: "kohinoor",
+    name: "Kohinoor Biryani House",
+    tagline: "Slow-cooked Hyderabadi biryani",
+    cover: img("photo-1631515243349-e0cb75fb8d3a", 1200, 800),
+    logo: img("photo-1599043513900-ed6fe01d3833", 200, 200),
+    rating: 4.4,
+    reviewCount: 891,
+    prepMinutes: [25, 35],
+    cuisines: ["Indian", "Biryani", "Mughlai"],
+    pickup: true,
+    dineIn: true,
+    open: true,
+    hours: "11:00 AM – 10:30 PM",
+    minOrder: 500,
+    serviceChargePct: 10,
+    taxPct: 13,
+    categories: ["Popular", "Biryani", "Kebabs", "Curries", "Breads"],
+    distanceKm: 2.8,
+  },
+  {
+    id: "flour-and-co",
+    name: "Flour & Co. Bakery",
+    tagline: "Sourdough, viennoiserie & cakes",
+    cover: img("photo-1509440159596-0249088772ff", 1200, 800),
+    logo: img("photo-1555507036-ab1f4038808a", 200, 200),
+    rating: 4.7,
+    reviewCount: 521,
+    prepMinutes: [5, 10],
+    cuisines: ["Bakery", "Desserts"],
+    pickup: true,
+    dineIn: false,
+    open: true,
+    hours: "7:00 AM – 7:00 PM",
+    minOrder: 100,
+    serviceChargePct: 0,
+    taxPct: 13,
+    categories: ["Popular", "Bread", "Pastry", "Cakes", "Cookies"],
+    distanceKm: 1.0,
+  },
+  {
+    id: "boba-lab",
+    name: "Boba Lab",
+    tagline: "Fresh-brewed bubble tea & lemonades",
+    cover: img("photo-1558857563-c0c6ee6ff8bd", 1200, 800),
+    logo: img("photo-1525803377221-4f6ccdaa24a7", 200, 200),
+    rating: 4.5,
+    reviewCount: 276,
+    prepMinutes: [6, 10],
+    cuisines: ["Drinks", "Bubble Tea"],
+    pickup: true,
+    dineIn: true,
+    open: true,
+    hours: "11:00 AM – 10:00 PM",
+    minOrder: 120,
+    serviceChargePct: 0,
+    taxPct: 13,
+    categories: ["Popular", "Milk Tea", "Fruit Tea", "Coffee", "Snacks"],
+    distanceKm: 1.6,
+  },
+];
+
+const spice: import("./types").ModifierGroup = {
+  id: "spice",
+  name: "Spice level",
+  min: 1,
+  max: 1,
+  required: true,
+  options: [
+    { id: "mild", name: "Mild", price: 0 },
+    { id: "medium", name: "Medium", price: 0 },
+    { id: "hot", name: "Hot", price: 0 },
+    { id: "extra-hot", name: "Extra hot", price: 0 },
+  ],
+};
+
+const addOns = (items: [string, number][]): import("./types").ModifierGroup => ({
+  id: "addons",
+  name: "Add-ons (optional)",
+  min: 0,
+  max: 4,
+  options: items.map(([n, p], i) => ({ id: `a${i}`, name: n, price: p })),
+});
+
+const sizeVariants = (base: number): import("./types").Variant[] => [
+  { id: "reg", name: "Regular", price: base },
+  { id: "lg", name: "Large", price: Math.round(base * 1.35) },
+  { id: "xl", name: "Extra Large", price: Math.round(base * 1.7) },
+];
+
+export const menuItems: MenuItem[] = [
+  // Momo House
+  {
+    id: "mh-1", restaurantId: "momo-house", name: "Chicken Steam Momo",
+    description: "8 pieces of hand-folded dumplings with juicy chicken filling.",
+    price: 220, image: img("photo-1626776876729-bab4369a5a5a"),
+    diet: "nonveg", category: "Popular", popular: true,
+    variants: [
+      { id: "8pc", name: "8 pieces", price: 220 },
+      { id: "12pc", name: "12 pieces", price: 320 },
+    ],
+    modifierGroups: [
+      spice,
+      addOns([["Extra dipping sauce", 30], ["Cheese topping", 60], ["Schezwan dip", 40]]),
+    ],
+  },
+  {
+    id: "mh-2", restaurantId: "momo-house", name: "Buff C-Momo",
+    description: "Crispy fried momo tossed in our house chilli garlic sauce.",
+    price: 260, image: img("photo-1496116218417-1a781b1c416c"),
+    diet: "nonveg", category: "Popular", popular: true,
+    modifierGroups: [spice],
+  },
+  {
+    id: "mh-3", restaurantId: "momo-house", name: "Veg Steam Momo",
+    description: "Cabbage, carrot and paneer in a silky wrapper.",
+    price: 180, image: img("photo-1534422298391-e4f8c172dddb"),
+    diet: "veg", category: "Steamed Momo",
+  },
+  {
+    id: "mh-4", restaurantId: "momo-house", name: "Jhol Momo",
+    description: "Steam momo bathed in a tangy peanut-sesame broth.",
+    price: 240, image: img("photo-1607330289024-1535c6b4e1c1"),
+    diet: "nonveg", category: "Steamed Momo",
+    modifierGroups: [spice],
+  },
+  {
+    id: "mh-5", restaurantId: "momo-house", name: "Paneer Fried Momo",
+    description: "Crispy fried with creamy paneer filling.",
+    price: 220, image: img("photo-1496116218417-1a781b1c416c"),
+    diet: "veg", category: "Fried Momo",
+  },
+  {
+    id: "mh-6", restaurantId: "momo-house", name: "Thukpa Noodle Soup",
+    description: "Himalayan hand-pulled noodles in a hearty broth.",
+    price: 280, image: img("photo-1569718212165-3a8278d5f624"),
+    diet: "nonveg", category: "Sides",
+  },
+  {
+    id: "mh-7", restaurantId: "momo-house", name: "Masala Chiya",
+    description: "Spiced milk tea brewed fresh.",
+    price: 80, image: img("photo-1597481499750-3e6b22637e12"),
+    diet: "veg", category: "Drinks",
+  },
+
+  // Fornello
+  {
+    id: "f-1", restaurantId: "fornello", name: "Margherita",
+    description: "San Marzano tomato, fior di latte, basil, EVOO.",
+    price: 580, image: img("photo-1574071318508-1cdbab80d002"),
+    diet: "veg", category: "Popular", popular: true,
+    variants: sizeVariants(580),
+    modifierGroups: [
+      addOns([["Extra mozzarella", 120], ["Truffle oil", 200], ["Chilli flakes", 0], ["Rocket", 80]]),
+    ],
+  },
+  {
+    id: "f-2", restaurantId: "fornello", name: "Diavola",
+    description: "Spicy salami, mozzarella, chilli honey drizzle.",
+    price: 760, image: img("photo-1565299624946-b28f40a0ae38"),
+    diet: "nonveg", category: "Popular", popular: true,
+    variants: sizeVariants(760),
+  },
+  {
+    id: "f-3", restaurantId: "fornello", name: "Quattro Formaggi",
+    description: "Mozzarella, gorgonzola, fontina, parmesan.",
+    price: 820, image: img("photo-1604382354936-07c5d9983bd3"),
+    diet: "veg", category: "Pizza",
+    variants: sizeVariants(820),
+  },
+  {
+    id: "f-4", restaurantId: "fornello", name: "Carbonara",
+    description: "Guanciale, pecorino, egg, black pepper.",
+    price: 640, image: img("photo-1612874742237-6526221588e3"),
+    diet: "egg", category: "Pasta",
+  },
+  {
+    id: "f-5", restaurantId: "fornello", name: "Penne Arrabbiata",
+    description: "Garlic, chilli, tomato, parsley.",
+    price: 520, image: img("photo-1621996346565-e3dbc646d9a9"),
+    diet: "veg", category: "Pasta",
+  },
+  {
+    id: "f-6", restaurantId: "fornello", name: "Tiramisu",
+    description: "Classic Italian dessert, made in-house.",
+    price: 340, image: img("photo-1571877227200-a0d98ea607e9"),
+    diet: "egg", category: "Desserts",
+  },
+
+  // Patty & Co.
+  {
+    id: "p-1", restaurantId: "patty-co", name: "Classic Smash",
+    description: "Double-smash beef, American cheese, onions, secret sauce.",
+    price: 480, image: img("photo-1568901346375-23c9450c58cd"),
+    diet: "nonveg", category: "Popular", popular: true,
+    modifierGroups: [
+      { id: "doneness", name: "Doneness", min: 1, max: 1, required: true,
+        options: [
+          { id: "med", name: "Medium", price: 0 },
+          { id: "well", name: "Well done", price: 0 },
+        ] },
+      addOns([["Extra patty", 180], ["Bacon", 120], ["Fried egg", 60], ["Jalapeños", 40]]),
+    ],
+  },
+  {
+    id: "p-2", restaurantId: "patty-co", name: "Buttermilk Chicken",
+    description: "Crispy buttermilk chicken, slaw, pickles, hot honey.",
+    price: 520, image: img("photo-1606755962773-d324e0a13086"),
+    diet: "nonveg", category: "Burgers", popular: true,
+  },
+  {
+    id: "p-3", restaurantId: "patty-co", name: "Mushroom Melt",
+    description: "Portobello, swiss, caramelized onion, garlic aioli.",
+    price: 460, image: img("photo-1550547660-d9450f859349"),
+    diet: "veg", category: "Burgers",
+  },
+  {
+    id: "p-4", restaurantId: "patty-co", name: "Hand-cut Fries",
+    description: "Skin-on potatoes, sea salt.",
+    price: 220, image: img("photo-1576107232684-1279f390859f"),
+    diet: "veg", category: "Sides",
+  },
+  {
+    id: "p-5", restaurantId: "patty-co", name: "Salted Caramel Shake",
+    description: "Hand-spun thick shake with salted caramel.",
+    price: 280, image: img("photo-1572490122747-3968b75cc699"),
+    diet: "veg", category: "Shakes",
+  },
+
+  // Ember Coffee
+  {
+    id: "e-1", restaurantId: "ember-coffee", name: "Flat White",
+    description: "Double ristretto, silky steamed milk.",
+    price: 220, image: img("photo-1517256064527-09c73fc73e38"),
+    diet: "veg", category: "Popular", popular: true,
+    variants: [
+      { id: "sm", name: "6 oz", price: 220 },
+      { id: "lg", name: "8 oz", price: 260 },
+    ],
+    modifierGroups: [
+      { id: "milk", name: "Milk", min: 1, max: 1, required: true,
+        options: [
+          { id: "whole", name: "Whole milk", price: 0 },
+          { id: "oat", name: "Oat milk", price: 60 },
+          { id: "almond", name: "Almond milk", price: 60 },
+        ] },
+      addOns([["Extra shot", 80], ["Vanilla syrup", 40], ["Hazelnut syrup", 40]]),
+    ],
+  },
+  {
+    id: "e-2", restaurantId: "ember-coffee", name: "Cold Brew",
+    description: "16-hour steeped, smooth and chocolatey.",
+    price: 260, image: img("photo-1461023058943-07fcbe16d735"),
+    diet: "veg", category: "Popular", popular: true,
+  },
+  {
+    id: "e-3", restaurantId: "ember-coffee", name: "Espresso",
+    description: "House blend, double shot.",
+    price: 160, image: img("photo-1510707577719-ae7c14805e3a"),
+    diet: "veg", category: "Espresso",
+  },
+  {
+    id: "e-4", restaurantId: "ember-coffee", name: "Avocado Toast",
+    description: "Sourdough, smashed avocado, chilli, lemon.",
+    price: 380, image: img("photo-1603046891744-1f6c47ee7c11"),
+    diet: "veg", category: "Brunch",
+  },
+  {
+    id: "e-5", restaurantId: "ember-coffee", name: "Eggs Benedict",
+    description: "Poached eggs, ham, hollandaise on muffin.",
+    price: 520, image: img("photo-1608039829572-78524f79c4c7"),
+    diet: "egg", category: "Brunch",
+  },
+  {
+    id: "e-6", restaurantId: "ember-coffee", name: "Almond Croissant",
+    description: "Buttery, twice-baked with almond cream.",
+    price: 180, image: img("photo-1555507036-ab1f4038808a"),
+    diet: "egg", category: "Pastries",
+  },
+
+  // Ohana Sushi
+  {
+    id: "o-1", restaurantId: "ohana-sushi", name: "Salmon Nigiri (2 pc)",
+    description: "Norwegian salmon, hand-pressed shari.",
+    price: 320, image: img("photo-1579871494447-9811cf80d66c"),
+    diet: "nonveg", category: "Popular", popular: true,
+  },
+  {
+    id: "o-2", restaurantId: "ohana-sushi", name: "Dragon Roll",
+    description: "Eel, cucumber, avocado, unagi sauce.",
+    price: 680, image: img("photo-1553621042-f6e147245754"),
+    diet: "nonveg", category: "Popular", popular: true,
+  },
+  {
+    id: "o-3", restaurantId: "ohana-sushi", name: "Veggie Roll",
+    description: "Cucumber, avocado, pickled radish, sesame.",
+    price: 420, image: img("photo-1607301405390-d831c242f59b"),
+    diet: "veg", category: "Rolls",
+  },
+  {
+    id: "o-4", restaurantId: "ohana-sushi", name: "Tuna Sashimi",
+    description: "6 pieces of fresh tuna sashimi.",
+    price: 580, image: img("photo-1617196034796-73dfa7b1fd56"),
+    diet: "nonveg", category: "Sashimi",
+  },
+  {
+    id: "o-5", restaurantId: "ohana-sushi", name: "Edamame",
+    description: "Steamed soy beans, sea salt.",
+    price: 220, image: img("photo-1564834744159-ff0ea41ba4b9"),
+    diet: "veg", category: "Sides",
+  },
+
+  // Kohinoor Biryani
+  {
+    id: "k-1", restaurantId: "kohinoor", name: "Chicken Dum Biryani",
+    description: "Long-grain basmati slow-cooked with marinated chicken.",
+    price: 480, image: img("photo-1631515243349-e0cb75fb8d3a"),
+    diet: "nonveg", category: "Popular", popular: true,
+    variants: [
+      { id: "half", name: "Half", price: 320 },
+      { id: "full", name: "Full", price: 480 },
+      { id: "family", name: "Family", price: 980 },
+    ],
+    modifierGroups: [
+      spice,
+      addOns([["Extra raita", 40], ["Boiled egg", 30], ["Mirchi salan", 80]]),
+    ],
+  },
+  {
+    id: "k-2", restaurantId: "kohinoor", name: "Mutton Biryani",
+    description: "Tender mutton, aromatic spices, saffron.",
+    price: 620, image: img("photo-1589302168068-964664d93dc0"),
+    diet: "nonveg", category: "Popular", popular: true,
+  },
+  {
+    id: "k-3", restaurantId: "kohinoor", name: "Veg Biryani",
+    description: "Basmati with seasonal vegetables and herbs.",
+    price: 380, image: img("photo-1633945274405-b6c8069047b0"),
+    diet: "veg", category: "Biryani",
+  },
+  {
+    id: "k-4", restaurantId: "kohinoor", name: "Seekh Kebab",
+    description: "Charcoal-grilled minced lamb skewers.",
+    price: 460, image: img("photo-1599487488170-d11ec9c172f0"),
+    diet: "nonveg", category: "Kebabs",
+  },
+  {
+    id: "k-5", restaurantId: "kohinoor", name: "Butter Chicken",
+    description: "Creamy tomato gravy with tandoori chicken.",
+    price: 520, image: img("photo-1603894584373-5ac82b2ae398"),
+    diet: "nonveg", category: "Curries",
+  },
+  {
+    id: "k-6", restaurantId: "kohinoor", name: "Garlic Naan",
+    description: "Clay-oven baked, garlic and butter.",
+    price: 80, image: img("photo-1626776876729-bab4369a5a5a"),
+    diet: "veg", category: "Breads",
+  },
+
+  // Flour & Co.
+  {
+    id: "fc-1", restaurantId: "flour-and-co", name: "Sourdough Loaf",
+    description: "48-hour fermented country loaf.",
+    price: 380, image: img("photo-1509440159596-0249088772ff"),
+    diet: "veg", category: "Popular", popular: true,
+  },
+  {
+    id: "fc-2", restaurantId: "flour-and-co", name: "Pain au Chocolat",
+    description: "Laminated dough, dark chocolate batons.",
+    price: 220, image: img("photo-1555507036-ab1f4038808a"),
+    diet: "egg", category: "Popular", popular: true,
+  },
+  {
+    id: "fc-3", restaurantId: "flour-and-co", name: "Cinnamon Bun",
+    description: "Cardamom-spiced, sticky and warm.",
+    price: 240, image: img("photo-1509365465985-25d11c17e812"),
+    diet: "egg", category: "Pastry",
+  },
+  {
+    id: "fc-4", restaurantId: "flour-and-co", name: "Basque Cheesecake",
+    description: "Burnt-top, creamy center. Per slice.",
+    price: 320, image: img("photo-1565958011703-44f9829ba187"),
+    diet: "egg", category: "Cakes",
+  },
+  {
+    id: "fc-5", restaurantId: "flour-and-co", name: "Chocolate Chip Cookie",
+    description: "Brown butter, dark chocolate, sea salt.",
+    price: 140, image: img("photo-1499636136210-6f4ee915583e"),
+    diet: "egg", category: "Cookies",
+  },
+
+  // Boba Lab
+  {
+    id: "b-1", restaurantId: "boba-lab", name: "Classic Milk Tea",
+    description: "Black tea, milk, brown sugar pearls.",
+    price: 220, image: img("photo-1558857563-c0c6ee6ff8bd"),
+    diet: "veg", category: "Popular", popular: true,
+    variants: [
+      { id: "reg", name: "Regular", price: 220 },
+      { id: "lg", name: "Large", price: 280 },
+    ],
+    modifierGroups: [
+      { id: "sweet", name: "Sweetness", min: 1, max: 1, required: true,
+        options: [
+          { id: "0", name: "0%", price: 0 },
+          { id: "25", name: "25%", price: 0 },
+          { id: "50", name: "50%", price: 0 },
+          { id: "100", name: "100%", price: 0 },
+        ] },
+      { id: "ice", name: "Ice", min: 1, max: 1, required: true,
+        options: [
+          { id: "none", name: "No ice", price: 0 },
+          { id: "less", name: "Less ice", price: 0 },
+          { id: "reg", name: "Regular ice", price: 0 },
+        ] },
+      addOns([["Brown sugar pearls", 40], ["Lychee jelly", 40], ["Cheese foam", 60]]),
+    ],
+  },
+  {
+    id: "b-2", restaurantId: "boba-lab", name: "Strawberry Matcha",
+    description: "Ceremonial matcha, strawberry purée, milk.",
+    price: 280, image: img("photo-1525803377221-4f6ccdaa24a7"),
+    diet: "veg", category: "Popular", popular: true,
+  },
+  {
+    id: "b-3", restaurantId: "boba-lab", name: "Passion Fruit Tea",
+    description: "Jasmine tea, fresh passion fruit, lime.",
+    price: 240, image: img("photo-1556679343-c7306c1976bc"),
+    diet: "veg", category: "Fruit Tea",
+  },
+  {
+    id: "b-4", restaurantId: "boba-lab", name: "Iced Latte",
+    description: "Double espresso over cold milk and ice.",
+    price: 200, image: img("photo-1461023058943-07fcbe16d735"),
+    diet: "veg", category: "Coffee",
+  },
+];
+
+export const seedOrders: Order[] = [
+  {
+    id: "ord-1024",
+    number: "DQ-1024",
+    restaurantId: "ember-coffee",
+    restaurantName: "Ember Coffee Roasters",
+    restaurantLogo: img("photo-1495474472287-4d71bcdd2085", 200, 200),
+    fulfillment: "pickup",
+    status: "preparing",
+    placedAt: new Date(Date.now() - 1000 * 60 * 6).toISOString(),
+    readyAt: new Date(Date.now() + 1000 * 60 * 8).toISOString(),
+    items: [
+      { id: "e-1", name: "Flat White", qty: 1, price: 280, variantName: "8 oz", modifierNames: ["Oat milk"] },
+      { id: "e-6", name: "Almond Croissant", qty: 2, price: 180 },
+    ],
+    subtotal: 640, discount: 0, serviceCharge: 32, tax: 87, total: 759,
+    customerName: "Aarav Sharma", customerPhone: "+977 98XX XXX 421", paid: true,
+  },
+  {
+    id: "ord-1019",
+    number: "DQ-1019",
+    restaurantId: "patty-co",
+    restaurantName: "Patty & Co.",
+    restaurantLogo: img("photo-1571091718767-18b5b1457add", 200, 200),
+    fulfillment: "pickup",
+    status: "completed",
+    placedAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
+    items: [
+      { id: "p-1", name: "Classic Smash", qty: 1, price: 480, modifierNames: ["Medium", "Bacon"] },
+      { id: "p-4", name: "Hand-cut Fries", qty: 1, price: 220 },
+    ],
+    subtotal: 700, discount: 0, serviceCharge: 0, tax: 91, total: 791,
+    customerName: "Aarav Sharma", customerPhone: "+977 98XX XXX 421", paid: true,
+  },
+  {
+    id: "ord-1008",
+    number: "DQ-1008",
+    restaurantId: "fornello",
+    restaurantName: "Fornello Pizzeria",
+    restaurantLogo: img("photo-1565299624946-b28f40a0ae38", 200, 200),
+    fulfillment: "dinein",
+    status: "completed",
+    placedAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
+    items: [
+      { id: "f-1", name: "Margherita", qty: 1, price: 580, variantName: "Large" },
+      { id: "f-6", name: "Tiramisu", qty: 1, price: 340 },
+    ],
+    subtotal: 920, discount: 100, serviceCharge: 82, tax: 119, total: 1021,
+    customerName: "Aarav Sharma", customerPhone: "+977 98XX XXX 421", paid: true,
+  },
+];
+
+export const getRestaurant = (id: string) => restaurants.find((r) => r.id === id);
+export const getMenu = (restaurantId: string) =>
+  menuItems.filter((m) => m.restaurantId === restaurantId);
+export const getItem = (id: string) => menuItems.find((m) => m.id === id);
