@@ -174,17 +174,20 @@ function RestaurantPage() {
         </div>
       </div>
 
-      {/* Menu sections — extra bottom space so floating + buttons clear the cart pill */}
-      <div className="space-y-7 px-4 pb-32 pt-4">
+      {/* Menu sections — compact horizontal rows, dense + scannable */}
+      <div className="space-y-6 px-4 pb-32 pt-4">
         {grouped.map(([cat, list]) => (
           <section
             key={cat}
             ref={(el) => { sectionRefs.current[cat] = el; }}
           >
-            <h2 className="mb-3 font-display text-lg font-extrabold">{cat}</h2>
-            <ul className="grid grid-cols-2 gap-3">
+            <div className="mb-2 flex items-baseline justify-between">
+              <h2 className="font-display text-lg font-extrabold">{cat}</h2>
+              <span className="text-[11px] font-semibold text-muted-foreground">{list.length} items</span>
+            </div>
+            <ul className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
               {list.map((m) => (
-                <MenuItemCard
+                <MenuItemRow
                   key={m.id + cat}
                   item={m}
                   onOpen={(el) => {
@@ -197,6 +200,7 @@ function RestaurantPage() {
           </section>
         ))}
       </div>
+
 
       <ItemCustomizerSheet
         item={sheetItem}
