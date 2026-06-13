@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { safeStorage } from "./safe-storage";
 import type { MenuItem, ModifierGroup } from "../mock/types";
 import { getRestaurant } from "../mock/data";
 
