@@ -174,17 +174,20 @@ function RestaurantPage() {
         </div>
       </div>
 
-      {/* Menu sections — extra bottom space so floating + buttons clear the cart pill */}
-      <div className="space-y-7 px-4 pb-32 pt-4">
+      {/* Menu sections — compact horizontal rows, dense + scannable */}
+      <div className="space-y-6 px-4 pb-32 pt-4">
         {grouped.map(([cat, list]) => (
           <section
             key={cat}
             ref={(el) => { sectionRefs.current[cat] = el; }}
           >
-            <h2 className="mb-3 font-display text-lg font-extrabold">{cat}</h2>
-            <ul className="grid grid-cols-2 gap-3">
+            <div className="mb-2 flex items-baseline justify-between">
+              <h2 className="font-display text-lg font-extrabold">{cat}</h2>
+              <span className="text-[11px] font-semibold text-muted-foreground">{list.length} items</span>
+            </div>
+            <ul className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
               {list.map((m) => (
-                <MenuItemCard
+                <MenuItemRow
                   key={m.id + cat}
                   item={m}
                   onOpen={(el) => {
@@ -198,6 +201,7 @@ function RestaurantPage() {
         ))}
       </div>
 
+
       <ItemCustomizerSheet
         item={sheetItem}
         open={!!sheetItem}
@@ -209,7 +213,7 @@ function RestaurantPage() {
 }
 
 
-function MenuItemCard({
+function MenuItemRow({
   item,
   onOpen,
 }: {
@@ -225,10 +229,25 @@ function MenuItemCard({
     <li>
       <button
         onClick={handleClick}
-        className="tap group block w-full rounded-2xl border border-border bg-card text-left shadow-card transition active:scale-[0.98]"
+        className="tap group flex w-full items-stretch gap-3 p-3 text-left transition active:bg-surface-2/60"
       >
-        <div className="relative aspect-square bg-surface-2">
-          <div className="h-full w-full overflow-hidden rounded-t-2xl">
+        <div className="min-w-0 flex-1 py-0.5">
+          <div className="flex items-center gap-1.5">
+            <DietaryBadge diet={item.diet} />
+            {item.popular && (
+              <span className="rounded-full bg-warning/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-warning-foreground">
+                Popular
+              </span>
+            )}
+          </div>
+          <p className="mt-1.5 line-clamp-1 text-[14px] font-bold leading-tight">{item.name}</p>
+          <p className="mt-0.5 line-clamp-2 text-[12px] leading-snug text-muted-foreground">
+            {item.description}
+          </p>
+          <p className="mt-1.5 text-[14px] font-extrabold text-foreground">{formatRs(item.price)}</p>
+        </div>
+        <div className="relative shrink-0">
+          <div className="h-20 w-20 overflow-hidden rounded-xl bg-surface-2">
             <img
               ref={ref}
               src={item.image}
@@ -237,31 +256,16 @@ function MenuItemCard({
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
             />
           </div>
-          <div className="absolute left-2 top-2">
-            <DietaryBadge diet={item.diet} />
-          </div>
-          {item.popular && (
-            <span className="absolute right-2 top-2 rounded-full bg-warning px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-warning-foreground">
-              Popular
-            </span>
-          )}
           <motion.span
             whileTap={{ scale: 0.85 }}
             className={cn(
-              "absolute -bottom-3 right-3 z-10 grid h-9 w-9 place-items-center rounded-full shadow-pill ring-4 ring-card transition",
+              "absolute -bottom-2 left-1/2 z-10 grid h-8 w-8 -translate-x-1/2 place-items-center rounded-full shadow-pill ring-[3px] ring-card transition",
               inCart ? "bg-success text-success-foreground" : "bg-primary text-primary-foreground",
             )}
             aria-hidden
           >
             <Plus className="h-4 w-4" strokeWidth={2.8} />
           </motion.span>
-        </div>
-        <div className="p-3 pt-4">
-          <p className="line-clamp-1 text-[13px] font-bold leading-tight">{item.name}</p>
-          <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-muted-foreground">
-            {item.description}
-          </p>
-          <p className="mt-2 text-sm font-extrabold text-foreground">{formatRs(item.price)}</p>
         </div>
       </button>
     </li>
