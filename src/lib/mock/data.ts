@@ -569,8 +569,8 @@ export const seedOrders: Order[] = [
     restaurantLogo: img("photo-1495474472287-4d71bcdd2085", 200, 200),
     fulfillment: "pickup",
     status: "preparing",
-    placedAt: new Date(Date.now() - 1000 * 60 * 6).toISOString(),
-    readyAt: new Date(Date.now() + 1000 * 60 * 8).toISOString(),
+    placedAt: "2026-06-13T22:54:00.000Z",
+    readyAt: "2026-06-13T23:08:00.000Z",
     items: [
       { id: "e-1", name: "Flat White", qty: 1, price: 280, variantName: "8 oz", modifierNames: ["Oat milk"] },
       { id: "e-6", name: "Almond Croissant", qty: 2, price: 180 },
@@ -586,7 +586,7 @@ export const seedOrders: Order[] = [
     restaurantLogo: img("photo-1571091718767-18b5b1457add", 200, 200),
     fulfillment: "pickup",
     status: "completed",
-    placedAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
+    placedAt: "2026-06-12T21:00:00.000Z",
     items: [
       { id: "p-1", name: "Classic Smash", qty: 1, price: 480, modifierNames: ["Medium", "Bacon"] },
       { id: "p-4", name: "Hand-cut Fries", qty: 1, price: 220 },
@@ -602,7 +602,7 @@ export const seedOrders: Order[] = [
     restaurantLogo: img("photo-1565299624946-b28f40a0ae38", 200, 200),
     fulfillment: "dinein",
     status: "completed",
-    placedAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
+    placedAt: "2026-06-10T20:00:00.000Z",
     items: [
       { id: "f-1", name: "Margherita", qty: 1, price: 580, variantName: "Large" },
       { id: "f-6", name: "Tiramisu", qty: 1, price: 340 },

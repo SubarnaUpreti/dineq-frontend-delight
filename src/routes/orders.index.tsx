@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { useOrders } from "@/lib/store/orders";
+import { useMemo, useState } from "react";
+import { getActiveOrders, getPastOrders, useOrders } from "@/lib/store/orders";
 import { EmptyState } from "@/components/common/EmptyState";
 import { formatRs } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -20,8 +20,9 @@ const STATUS: Record<string, { label: string; color: string }> = {
 };
 
 function OrdersPage() {
-  const active = useOrders((s) => s.active());
-  const past = useOrders((s) => s.past());
+  const orders = useOrders((s) => s.orders);
+  const active = useMemo(() => getActiveOrders(orders), [orders]);
+  const past = useMemo(() => getPastOrders(orders), [orders]);
   const [tab, setTab] = useState<"active" | "past">(active.length > 0 ? "active" : "past");
 
   const list = tab === "active" ? active : past;

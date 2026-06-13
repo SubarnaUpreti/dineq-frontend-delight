@@ -11,10 +11,26 @@ const STATUS_LABEL: Record<string, string> = {
   ready: "Ready for pickup",
 };
 
+const selectActiveOrderSnapshot = (s: ReturnType<typeof useOrders.getState>) => {
+  let snapshot = "";
+  let newestPlacedAt = "";
+  for (const order of s.orders) {
+    if (order.status === "completed") continue;
+    if (!snapshot || order.placedAt > newestPlacedAt) {
+      snapshot = `${order.id}|${order.restaurantName}|${order.status}`;
+      newestPlacedAt = order.placedAt;
+    }
+  }
+  return snapshot;
+};
+
+const selectCartCount = (s: ReturnType<typeof useCart.getState>) => s.itemCount();
+
 export function ActiveOrderBar() {
-  const active = useOrders((s) => s.active());
-  const cartCount = useCart((s) => s.itemCount());
-  const order = active[0];
+  const activeOrderSnapshot = useOrders(selectActiveOrderSnapshot);
+  const cartCount = useCart(selectCartCount);
+  const [orderId, restaurantName, status] = activeOrderSnapshot.split("|");
+  const hasActiveOrder = Boolean(orderId);
   // If cart pill is visible, push the active order bar up
   const bottomOffset = cartCount > 0 ? 152 : 84;
 
@@ -24,7 +40,7 @@ export function ActiveOrderBar() {
       style={{ bottom: `${bottomOffset}px` }}
     >
       <AnimatePresence>
-        {order && (
+        {hasActiveOrder && (
           <motion.div
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -34,7 +50,7 @@ export function ActiveOrderBar() {
           >
             <Link
               to="/orders/$id"
-              params={{ id: order.id }}
+              params={{ id: orderId }}
               className="tap flex h-14 w-full items-center gap-3 rounded-full bg-success px-4 text-success-foreground shadow-pill"
             >
               <span className="relative grid h-9 w-9 place-items-center rounded-full bg-white/15">
@@ -43,10 +59,10 @@ export function ActiveOrderBar() {
               </span>
               <span className="flex-1 text-left leading-tight">
                 <span className="block text-[11px] font-medium uppercase tracking-wider opacity-90">
-                  {order.restaurantName}
+                  {restaurantName}
                 </span>
                 <span className="block text-sm font-bold">
-                  {STATUS_LABEL[order.status] ?? "In progress"}
+                  {STATUS_LABEL[status] ?? "In progress"}
                 </span>
               </span>
               <span className="text-xs font-semibold">Track</span>
