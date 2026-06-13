@@ -19,6 +19,12 @@ const STATUS: Record<string, { label: string; color: string }> = {
   completed: { label: "Completed", color: "bg-surface-2 text-muted-foreground" },
 };
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
+}
+
 function OrdersPage() {
   const orders = useOrders((s) => s.orders);
   const active = useMemo(() => getActiveOrders(orders), [orders]);
