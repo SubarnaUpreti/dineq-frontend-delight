@@ -79,7 +79,7 @@ function OrderTrackingPage() {
                     isCurrent && "ring-4 ring-primary/20",
                   )}
                 >
-                  {done ? <Check className="h-4 w-4" strokeWidth={3} /> : <span className="text-sm">{s.emoji}</span>}
+                  {done ? <Check className="h-4 w-4" strokeWidth={3} /> : <s.Icon className="h-4 w-4" />}
                 </span>
                 <div className="flex-1 pt-1">
                   <p className={cn("text-sm font-bold", done ? "text-foreground" : "text-muted-foreground")}>
