@@ -9,12 +9,39 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as RestaurantIdRouteImport } from './routes/restaurant.$id'
+import { Route as PayOrderIdRouteImport } from './routes/pay.$orderId'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
+import { Route as PayOrderIdVerifyRouteImport } from './routes/pay.$orderId.verify'
 
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersIndexRoute = OrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RestaurantIdRoute = RestaurantIdRouteImport.update({
@@ -22,40 +49,138 @@ const RestaurantIdRoute = RestaurantIdRouteImport.update({
   path: '/restaurant/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PayOrderIdRoute = PayOrderIdRouteImport.update({
+  id: '/pay/$orderId',
+  path: '/pay/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/orders/$id',
+  path: '/orders/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PayOrderIdVerifyRoute = PayOrderIdVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => PayOrderIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/favorites': typeof FavoritesRoute
+  '/profile': typeof ProfileRoute
+  '/orders/$id': typeof OrdersIdRoute
+  '/pay/$orderId': typeof PayOrderIdRouteWithChildren
   '/restaurant/$id': typeof RestaurantIdRoute
+  '/orders/': typeof OrdersIndexRoute
+  '/pay/$orderId/verify': typeof PayOrderIdVerifyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/favorites': typeof FavoritesRoute
+  '/profile': typeof ProfileRoute
+  '/orders/$id': typeof OrdersIdRoute
+  '/pay/$orderId': typeof PayOrderIdRouteWithChildren
   '/restaurant/$id': typeof RestaurantIdRoute
+  '/orders': typeof OrdersIndexRoute
+  '/pay/$orderId/verify': typeof PayOrderIdVerifyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/favorites': typeof FavoritesRoute
+  '/profile': typeof ProfileRoute
+  '/orders/$id': typeof OrdersIdRoute
+  '/pay/$orderId': typeof PayOrderIdRouteWithChildren
   '/restaurant/$id': typeof RestaurantIdRoute
+  '/orders/': typeof OrdersIndexRoute
+  '/pay/$orderId/verify': typeof PayOrderIdVerifyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/restaurant/$id'
+  fullPaths:
+    | '/'
+    | '/cart'
+    | '/favorites'
+    | '/profile'
+    | '/orders/$id'
+    | '/pay/$orderId'
+    | '/restaurant/$id'
+    | '/orders/'
+    | '/pay/$orderId/verify'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/restaurant/$id'
-  id: '__root__' | '/' | '/restaurant/$id'
+  to:
+    | '/'
+    | '/cart'
+    | '/favorites'
+    | '/profile'
+    | '/orders/$id'
+    | '/pay/$orderId'
+    | '/restaurant/$id'
+    | '/orders'
+    | '/pay/$orderId/verify'
+  id:
+    | '__root__'
+    | '/'
+    | '/cart'
+    | '/favorites'
+    | '/profile'
+    | '/orders/$id'
+    | '/pay/$orderId'
+    | '/restaurant/$id'
+    | '/orders/'
+    | '/pay/$orderId/verify'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CartRoute: typeof CartRoute
+  FavoritesRoute: typeof FavoritesRoute
+  ProfileRoute: typeof ProfileRoute
+  OrdersIdRoute: typeof OrdersIdRoute
+  PayOrderIdRoute: typeof PayOrderIdRouteWithChildren
   RestaurantIdRoute: typeof RestaurantIdRoute
+  OrdersIndexRoute: typeof OrdersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders/': {
+      id: '/orders/'
+      path: '/orders'
+      fullPath: '/orders/'
+      preLoaderRoute: typeof OrdersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/restaurant/$id': {
@@ -65,13 +190,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RestaurantIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pay/$orderId': {
+      id: '/pay/$orderId'
+      path: '/pay/$orderId'
+      fullPath: '/pay/$orderId'
+      preLoaderRoute: typeof PayOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/orders/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pay/$orderId/verify': {
+      id: '/pay/$orderId/verify'
+      path: '/verify'
+      fullPath: '/pay/$orderId/verify'
+      preLoaderRoute: typeof PayOrderIdVerifyRouteImport
+      parentRoute: typeof PayOrderIdRoute
+    }
   }
 }
 
+interface PayOrderIdRouteChildren {
+  PayOrderIdVerifyRoute: typeof PayOrderIdVerifyRoute
+}
+
+const PayOrderIdRouteChildren: PayOrderIdRouteChildren = {
+  PayOrderIdVerifyRoute: PayOrderIdVerifyRoute,
+}
+
+const PayOrderIdRouteWithChildren = PayOrderIdRoute._addFileChildren(
+  PayOrderIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CartRoute: CartRoute,
+  FavoritesRoute: FavoritesRoute,
+  ProfileRoute: ProfileRoute,
+  OrdersIdRoute: OrdersIdRoute,
+  PayOrderIdRoute: PayOrderIdRouteWithChildren,
   RestaurantIdRoute: RestaurantIdRoute,
+  OrdersIndexRoute: OrdersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
