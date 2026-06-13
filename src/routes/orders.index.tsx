@@ -19,6 +19,12 @@ const STATUS: Record<string, { label: string; color: string }> = {
   completed: { label: "Completed", color: "bg-surface-2 text-muted-foreground" },
 };
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
+}
+
 function OrdersPage() {
   const orders = useOrders((s) => s.orders);
   const active = useMemo(() => getActiveOrders(orders), [orders]);
@@ -95,8 +101,9 @@ function OrderCard({ o }: { o: Order }) {
             <div className="min-w-0">
               <p className="truncate font-display text-sm font-bold">{o.restaurantName}</p>
               <p className="text-[11px] text-muted-foreground">
-                {o.number} · {new Date(o.placedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                {o.number} · {formatDate(o.placedAt)}
               </p>
+
             </div>
             <span className={cn("rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider", s.color)}>
               {s.label}
