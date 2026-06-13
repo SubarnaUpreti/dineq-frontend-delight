@@ -16,15 +16,17 @@ export function RatingPill({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-success/12 font-semibold text-success",
+        "inline-flex items-center gap-1 rounded-full bg-foreground/[0.04] font-bold text-foreground tabular-nums",
         h,
         className,
       )}
     >
-      <Star className="h-3 w-3 fill-current" strokeWidth={0} />
+      <Star className="h-3 w-3 fill-success text-success" strokeWidth={0} />
       {rating.toFixed(1)}
       {reviewCount !== undefined && (
-        <span className="ml-0.5 font-medium opacity-80">({reviewCount})</span>
+        <span className="ml-0.5 font-medium text-muted-foreground">
+          ({reviewCount > 999 ? `${(reviewCount / 1000).toFixed(1)}k` : reviewCount})
+        </span>
       )}
     </span>
   );

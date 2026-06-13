@@ -170,8 +170,8 @@ function RestaurantPage() {
         </div>
       </div>
 
-      {/* Menu sections */}
-      <div className="space-y-7 px-4 pb-48 pt-4">
+      {/* Menu sections — extra bottom space so floating + buttons clear the cart pill */}
+      <div className="space-y-7 px-4 pb-32 pt-4">
         {grouped.map(([cat, list]) => (
           <section
             key={cat}

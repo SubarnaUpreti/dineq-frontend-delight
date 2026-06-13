@@ -155,9 +155,16 @@ function HomePage() {
         )}
       </section>
 
-      <div className="px-4 pb-2 pt-10 text-center text-[11px] text-muted-foreground">
-        Made with care · DineQ
-      </div>
+      {filtered.length > 0 && (
+        <div className="px-4 pb-2 pt-8 text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            You're all caught up
+          </p>
+          <p className="mt-1 text-[11px] text-muted-foreground/80">
+            {filtered.length} {filtered.length === 1 ? "place" : "places"} near you
+          </p>
+        </div>
+      )}
     </div>
   );
 }
