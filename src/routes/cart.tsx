@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Tag as TagIcon, Trash2, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Tag as TagIcon, Trash2, ShoppingBag, Utensils, type LucideIcon } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
 import { useUser } from "@/lib/store/user";
 import { useOrders } from "@/lib/store/orders";
