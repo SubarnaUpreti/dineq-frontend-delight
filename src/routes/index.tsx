@@ -34,11 +34,10 @@ function HomePage() {
   const [filters, setFilters] = useState<string[]>([]);
   const [category, setCategory] = useState<string | null>(null);
   const user = useUser((s) => s.user);
-  const greeting = useMemo(() => {
+  const [greeting, setGreeting] = useState("Welcome back");
+  useEffect(() => {
     const h = new Date().getHours();
-    if (h < 12) return "Good morning";
-    if (h < 17) return "Good afternoon";
-    return "Good evening";
+    setGreeting(h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
   }, []);
 
   const filtered = useMemo(() => {
