@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bike, ChevronRight } from "lucide-react";
-import { useOrders } from "@/lib/store/orders";
+import { useMemo } from "react";
+import { getActiveOrders, useOrders } from "@/lib/store/orders";
 import { useCart } from "@/lib/store/cart";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -12,7 +13,8 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export function ActiveOrderBar() {
-  const active = useOrders((s) => s.active());
+  const orders = useOrders((s) => s.orders);
+  const active = useMemo(() => getActiveOrders(orders), [orders]);
   const cartCount = useCart((s) => s.itemCount());
   const order = active[0];
   // If cart pill is visible, push the active order bar up
