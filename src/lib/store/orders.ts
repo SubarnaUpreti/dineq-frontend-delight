@@ -26,6 +26,6 @@ export const useOrders = create<OrdersState>()(
       past: () =>
         getState().orders.filter((o) => o.status === "completed").sort((a, b) => b.placedAt.localeCompare(a.placedAt)),
     }),
-    { name: "dineq.orders" },
+    { name: "dineq.orders", storage: safeStorage },
   ),
 );
