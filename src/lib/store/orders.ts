@@ -9,9 +9,15 @@ type OrdersState = {
   addOrder: (o: Order) => void;
   updateStatus: (id: string, status: OrderStatus) => void;
   get: (id: string) => Order | undefined;
-  active: () => Order[];
-  past: () => Order[];
 };
+
+const newestFirst = (a: Order, b: Order) => b.placedAt.localeCompare(a.placedAt);
+
+export const getActiveOrders = (orders: Order[]) =>
+  orders.filter((o) => o.status !== "completed").sort(newestFirst);
+
+export const getPastOrders = (orders: Order[]) =>
+  orders.filter((o) => o.status === "completed").sort(newestFirst);
 
 export const useOrders = create<OrdersState>()(
   persist(
@@ -21,10 +27,6 @@ export const useOrders = create<OrdersState>()(
       updateStatus: (id, status) =>
         set({ orders: getState().orders.map((o) => (o.id === id ? { ...o, status } : o)) }),
       get: (id) => getState().orders.find((o) => o.id === id),
-      active: () =>
-        getState().orders.filter((o) => o.status !== "completed").sort((a, b) => b.placedAt.localeCompare(a.placedAt)),
-      past: () =>
-        getState().orders.filter((o) => o.status === "completed").sort((a, b) => b.placedAt.localeCompare(a.placedAt)),
     }),
     { name: "dineq.orders", storage: safeStorage },
   ),
