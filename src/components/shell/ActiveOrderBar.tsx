@@ -11,20 +11,24 @@ const STATUS_LABEL: Record<string, string> = {
   ready: "Ready for pickup",
 };
 
-export function ActiveOrderBar() {
-  const activeOrderSnapshot = useOrders((s) => {
-    let snapshot = "";
-    let newestPlacedAt = "";
-    for (const order of s.orders) {
-      if (order.status === "completed") continue;
-      if (!snapshot || order.placedAt > newestPlacedAt) {
-        snapshot = `${order.id}|${order.restaurantName}|${order.status}`;
-        newestPlacedAt = order.placedAt;
-      }
+const selectActiveOrderSnapshot = (s: ReturnType<typeof useOrders.getState>) => {
+  let snapshot = "";
+  let newestPlacedAt = "";
+  for (const order of s.orders) {
+    if (order.status === "completed") continue;
+    if (!snapshot || order.placedAt > newestPlacedAt) {
+      snapshot = `${order.id}|${order.restaurantName}|${order.status}`;
+      newestPlacedAt = order.placedAt;
     }
-    return snapshot;
-  });
-  const cartCount = useCart((s) => s.itemCount());
+  }
+  return snapshot;
+};
+
+const selectCartCount = (s: ReturnType<typeof useCart.getState>) => s.itemCount();
+
+export function ActiveOrderBar() {
+  const activeOrderSnapshot = useOrders(selectActiveOrderSnapshot);
+  const cartCount = useCart(selectCartCount);
   const [orderId, restaurantName, status] = activeOrderSnapshot.split("|");
   const hasActiveOrder = Boolean(orderId);
   // If cart pill is visible, push the active order bar up
