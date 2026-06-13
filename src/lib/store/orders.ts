@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { safeStorage } from "./safe-storage";
 import type { Order, OrderStatus } from "../mock/types";
 import { seedOrders } from "../mock/data";
 
