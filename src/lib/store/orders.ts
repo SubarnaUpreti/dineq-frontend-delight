@@ -28,6 +28,6 @@ export const useOrders = create<OrdersState>()(
         set({ orders: getState().orders.map((o) => (o.id === id ? { ...o, status } : o)) }),
       get: (id) => getState().orders.find((o) => o.id === id),
     }),
-    { name: "dineq.orders", storage: safeStorage },
+    { name: "dineq.orders", storage: safeStorage, skipHydration: true },
   ),
 );

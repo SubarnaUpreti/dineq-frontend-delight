@@ -103,7 +103,16 @@ export const useCart = create<CartState>()(
       subtotal: () => get().lines.reduce((s, l) => s + l.unitPrice * l.qty, 0),
       itemCount: () => get().lines.reduce((s, l) => s + l.qty, 0),
     }),
-    { name: "dineq.cart", storage: safeStorage, partialize: (s) => ({ lines: s.lines, restaurantId: s.restaurantId, restaurantName: s.restaurantName }) },
+    {
+      name: "dineq.cart",
+      storage: safeStorage,
+      skipHydration: true,
+      partialize: (s) => ({
+        lines: s.lines,
+        restaurantId: s.restaurantId,
+        restaurantName: s.restaurantName,
+      }),
+    },
   ),
 );
 
