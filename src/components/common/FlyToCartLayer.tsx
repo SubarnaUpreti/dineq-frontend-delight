@@ -5,8 +5,10 @@ import type { FlyEventDetail } from "@/lib/fly-to-cart";
 type Flight = FlyEventDetail & { id: number };
 
 export function FlyToCartLayer() {
+  const [mounted, setMounted] = useState(false);
   const [flights, setFlights] = useState<Flight[]>([]);
   useEffect(() => {
+    setMounted(true);
     let n = 0;
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<FlyEventDetail>).detail;
@@ -18,11 +20,11 @@ export function FlyToCartLayer() {
     return () => window.removeEventListener("dineq:fly", handler);
   }, []);
 
-  const isBrowser = typeof window !== "undefined";
-  const target = isBrowser ? document.getElementById("cart-pill-target") : null;
+  if (!mounted) return null;
+  const target = document.getElementById("cart-pill-target");
   const tRect = target?.getBoundingClientRect();
-  const targetX = tRect ? tRect.left + tRect.width / 2 - 28 : (isBrowser ? window.innerWidth / 2 - 28 : 0);
-  const targetY = tRect ? tRect.top + tRect.height / 2 - 28 : (isBrowser ? window.innerHeight - 120 : 0);
+  const targetX = tRect ? tRect.left + tRect.width / 2 - 28 : window.innerWidth / 2 - 28;
+  const targetY = tRect ? tRect.top + tRect.height / 2 - 28 : window.innerHeight - 120;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[60]">
