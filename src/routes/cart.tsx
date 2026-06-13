@@ -385,9 +385,9 @@ function CartHeader({ onClear }: { onClear?: () => void }) {
 }
 
 function FulfillBtn({
-  active, onClick, disabled, label, sub, emoji,
+  active, onClick, disabled, label, sub, Icon,
 }: {
-  active: boolean; onClick: () => void; disabled?: boolean; label: string; sub: string; emoji: string;
+  active: boolean; onClick: () => void; disabled?: boolean; label: string; sub: string; Icon: LucideIcon;
 }) {
   return (
     <button
@@ -398,8 +398,10 @@ function FulfillBtn({
         active ? "bg-background shadow-card" : "bg-transparent",
       )}
     >
-      <span className="text-xl">{emoji}</span>
-      <span className={cn("mt-1 text-sm font-bold", active ? "text-foreground" : "text-muted-foreground")}>
+      <span className={cn("grid h-9 w-9 place-items-center rounded-full", active ? "bg-primary-soft text-primary" : "bg-surface text-muted-foreground")}>
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className={cn("mt-2 text-sm font-bold", active ? "text-foreground" : "text-muted-foreground")}>
         {label}
       </span>
       <span className="text-[11px] text-muted-foreground">{sub}</span>
