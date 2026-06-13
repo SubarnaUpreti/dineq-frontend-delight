@@ -211,7 +211,7 @@ function CartPage() {
             disabled={!restaurant?.pickup}
             label="Pickup"
             sub="Skip the line"
-            emoji="🛍️"
+            Icon={ShoppingBag}
           />
           <FulfillBtn
             active={fulfillment === "dinein"}
@@ -219,8 +219,9 @@ function CartPage() {
             disabled={!restaurant?.dineIn}
             label="Dine-in"
             sub="Ready at table"
-            emoji="🪑"
+            Icon={Utensils}
           />
+
         </div>
       </section>
 
