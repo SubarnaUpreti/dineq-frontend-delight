@@ -100,7 +100,7 @@ export function ItemCustomizerSheet({
           {item && (
             <>
               {/* Hero image */}
-              <div className="relative h-[42vh] w-full shrink-0 overflow-hidden bg-surface-2">
+              <div className="relative h-[28vh] max-h-[260px] w-full shrink-0 overflow-hidden bg-surface-2">
                 <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
                 <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
                 <button
