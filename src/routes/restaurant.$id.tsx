@@ -128,15 +128,6 @@ function RestaurantPage() {
             <span
               className={cn(
                 "inline-flex items-center gap-1 font-semibold",
-                r.open ? "text-success" : "text-destructive",
-              )}
-            >
-              <span className={cn("h-1.5 w-1.5 rounded-full", r.open ? "bg-success" : "bg-destructive")} />
-              {r.open ? "Open now" : "Closed"}
-            </span>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {r.cuisines.map((c) => (
               <span
                 key={c}
                 className="rounded-full bg-surface-2 px-2.5 py-0.5 text-[11px] font-semibold text-foreground/70"
