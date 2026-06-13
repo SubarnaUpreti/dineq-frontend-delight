@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Check, Clock, MapPin, Phone, HelpCircle } from "lucide-react";
+import { ArrowLeft, Check, Clock, MapPin, Phone, HelpCircle, Receipt, ChefHat, ShoppingBag, type LucideIcon } from "lucide-react";
 import { useOrders } from "@/lib/store/orders";
 import { formatRs } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -10,11 +10,11 @@ export const Route = createFileRoute("/orders/$id")({
   component: OrderTrackingPage,
 });
 
-const STEPS: { key: OrderStatus; label: string; emoji: string }[] = [
-  { key: "placed", label: "Order placed", emoji: "📝" },
-  { key: "accepted", label: "Restaurant accepted", emoji: "✅" },
-  { key: "preparing", label: "Preparing your order", emoji: "👨‍🍳" },
-  { key: "ready", label: "Ready for you", emoji: "🛍️" },
+const STEPS: { key: OrderStatus; label: string; Icon: LucideIcon }[] = [
+  { key: "placed", label: "Order placed", Icon: Receipt },
+  { key: "accepted", label: "Restaurant accepted", Icon: Check },
+  { key: "preparing", label: "Preparing your order", Icon: ChefHat },
+  { key: "ready", label: "Ready for you", Icon: ShoppingBag },
 ];
 
 function OrderTrackingPage() {
@@ -79,7 +79,7 @@ function OrderTrackingPage() {
                     isCurrent && "ring-4 ring-primary/20",
                   )}
                 >
-                  {done ? <Check className="h-4 w-4" strokeWidth={3} /> : <span className="text-sm">{s.emoji}</span>}
+                  {done ? <Check className="h-4 w-4" strokeWidth={3} /> : <s.Icon className="h-4 w-4" />}
                 </span>
                 <div className="flex-1 pt-1">
                   <p className={cn("text-sm font-bold", done ? "text-foreground" : "text-muted-foreground")}>

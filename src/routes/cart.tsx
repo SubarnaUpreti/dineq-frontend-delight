@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Tag as TagIcon, Trash2, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Tag as TagIcon, Trash2, ShoppingBag, Utensils, type LucideIcon } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
 import { useUser } from "@/lib/store/user";
 import { useOrders } from "@/lib/store/orders";
@@ -211,7 +211,7 @@ function CartPage() {
             disabled={!restaurant?.pickup}
             label="Pickup"
             sub="Skip the line"
-            emoji="🛍️"
+            Icon={ShoppingBag}
           />
           <FulfillBtn
             active={fulfillment === "dinein"}
@@ -219,8 +219,9 @@ function CartPage() {
             disabled={!restaurant?.dineIn}
             label="Dine-in"
             sub="Ready at table"
-            emoji="🪑"
+            Icon={Utensils}
           />
+
         </div>
       </section>
 
@@ -384,9 +385,9 @@ function CartHeader({ onClear }: { onClear?: () => void }) {
 }
 
 function FulfillBtn({
-  active, onClick, disabled, label, sub, emoji,
+  active, onClick, disabled, label, sub, Icon,
 }: {
-  active: boolean; onClick: () => void; disabled?: boolean; label: string; sub: string; emoji: string;
+  active: boolean; onClick: () => void; disabled?: boolean; label: string; sub: string; Icon: LucideIcon;
 }) {
   return (
     <button
@@ -397,8 +398,10 @@ function FulfillBtn({
         active ? "bg-background shadow-card" : "bg-transparent",
       )}
     >
-      <span className="text-xl">{emoji}</span>
-      <span className={cn("mt-1 text-sm font-bold", active ? "text-foreground" : "text-muted-foreground")}>
+      <span className={cn("grid h-9 w-9 place-items-center rounded-full", active ? "bg-primary-soft text-primary" : "bg-surface text-muted-foreground")}>
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className={cn("mt-2 text-sm font-bold", active ? "text-foreground" : "text-muted-foreground")}>
         {label}
       </span>
       <span className="text-[11px] text-muted-foreground">{sub}</span>
