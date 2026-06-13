@@ -1,8 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bike, ChevronRight } from "lucide-react";
-import { useMemo } from "react";
-import { getActiveOrders, useOrders } from "@/lib/store/orders";
+import { useOrders } from "@/lib/store/orders";
 import { useCart } from "@/lib/store/cart";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -13,10 +12,20 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export function ActiveOrderBar() {
-  const orders = useOrders((s) => s.orders);
-  const active = useMemo(() => getActiveOrders(orders), [orders]);
+  const orderId = useOrders((s) => {
+    let activeId: string | null = null;
+    let newestPlacedAt = "";
+    for (const order of s.orders) {
+      if (order.status === "completed") continue;
+      if (!activeId || order.placedAt > newestPlacedAt) {
+        activeId = order.id;
+        newestPlacedAt = order.placedAt;
+      }
+    }
+    return activeId;
+  });
+  const order = useOrders((s) => (orderId ? s.orders.find((o) => o.id === orderId) : undefined));
   const cartCount = useCart((s) => s.itemCount());
-  const order = active[0];
   // If cart pill is visible, push the active order bar up
   const bottomOffset = cartCount > 0 ? 152 : 84;
 
