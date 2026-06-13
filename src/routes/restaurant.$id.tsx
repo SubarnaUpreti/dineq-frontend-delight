@@ -135,17 +135,21 @@ function RestaurantPage() {
               {r.open ? "Open now" : "Closed"}
             </span>
           </div>
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {r.cuisines.map((c: string) => (
-              <span
-                key={c}
-                className="rounded-full bg-surface-2 px-2.5 py-0.5 text-[11px] font-semibold text-foreground/70"
-              >
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] font-semibold text-foreground/70">
+            {r.cuisines.map((c: string, i: number) => (
+              <span key={c} className="inline-flex items-center gap-3">
                 {c}
+                {i < r.cuisines.length - 1 && <span className="h-1 w-1 rounded-full bg-border" />}
               </span>
             ))}
-            {r.pickup && <Tag color="success">Pickup</Tag>}
-            {r.dineIn && <Tag color="info">Dine-in</Tag>}
+            {(r.pickup || r.dineIn) && (
+              <>
+                <span className="h-1 w-1 rounded-full bg-border" />
+                <span className="text-foreground/60">
+                  {r.pickup && r.dineIn ? "Pickup · Dine-in" : r.pickup ? "Pickup" : "Dine-in"}
+                </span>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -204,15 +208,6 @@ function RestaurantPage() {
   );
 }
 
-function Tag({ children, color }: { children: React.ReactNode; color: "success" | "info" }) {
-  const cls =
-    color === "success" ? "bg-success/12 text-success" : "bg-primary-soft text-primary";
-  return (
-    <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider", cls)}>
-      {children}
-    </span>
-  );
-}
 
 function MenuItemCard({
   item,
