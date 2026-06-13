@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { safeStorage } from "./safe-storage";
 
 type FavState = {
   ids: string[];
-  toggle: (id: string) => boolean; // returns new state
+  toggle: (id: string) => boolean;
   has: (id: string) => boolean;
 };
 
@@ -18,6 +19,6 @@ export const useFavorites = create<FavState>()(
       },
       has: (id) => get().ids.includes(id),
     }),
-    { name: "dineq.favorites" },
+    { name: "dineq.favorites", storage: safeStorage },
   ),
 );
