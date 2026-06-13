@@ -171,7 +171,7 @@ function RestaurantPage() {
       </div>
 
       {/* Menu sections */}
-      <div className="space-y-7 px-4 pb-12 pt-4">
+      <div className="space-y-7 px-4 pb-48 pt-4">
         {grouped.map(([cat, list]) => (
           <section
             key={cat}
