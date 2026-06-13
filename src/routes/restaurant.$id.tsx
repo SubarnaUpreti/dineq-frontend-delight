@@ -230,16 +230,18 @@ function MenuItemCard({
     <li>
       <button
         onClick={handleClick}
-        className="tap group block w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-card transition active:scale-[0.98]"
+        className="tap group block w-full rounded-2xl border border-border bg-card text-left shadow-card transition active:scale-[0.98]"
       >
-        <div className="relative aspect-square overflow-hidden bg-surface-2">
-          <img
-            ref={ref}
-            src={item.image}
-            alt={item.name}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
-          />
+        <div className="relative aspect-square bg-surface-2">
+          <div className="h-full w-full overflow-hidden rounded-t-2xl">
+            <img
+              ref={ref}
+              src={item.image}
+              alt={item.name}
+              loading="lazy"
+              className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            />
+          </div>
           <div className="absolute left-2 top-2">
             <DietaryBadge diet={item.diet} />
           </div>
