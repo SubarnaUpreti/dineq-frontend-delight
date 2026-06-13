@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { safeStorage } from "./safe-storage";
 import type { Order, OrderStatus } from "../mock/types";
 import { seedOrders } from "../mock/data";
 
@@ -25,6 +26,6 @@ export const useOrders = create<OrdersState>()(
       past: () =>
         getState().orders.filter((o) => o.status === "completed").sort((a, b) => b.placedAt.localeCompare(a.placedAt)),
     }),
-    { name: "dineq.orders" },
+    { name: "dineq.orders", storage: safeStorage },
   ),
 );

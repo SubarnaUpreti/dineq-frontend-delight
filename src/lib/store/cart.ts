@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { safeStorage } from "./safe-storage";
 import type { MenuItem, ModifierGroup } from "../mock/types";
 import { getRestaurant } from "../mock/data";
 
@@ -102,7 +103,7 @@ export const useCart = create<CartState>()(
       subtotal: () => get().lines.reduce((s, l) => s + l.unitPrice * l.qty, 0),
       itemCount: () => get().lines.reduce((s, l) => s + l.qty, 0),
     }),
-    { name: "dineq.cart", partialize: (s) => ({ lines: s.lines, restaurantId: s.restaurantId, restaurantName: s.restaurantName }) },
+    { name: "dineq.cart", storage: safeStorage, partialize: (s) => ({ lines: s.lines, restaurantId: s.restaurantId, restaurantName: s.restaurantName }) },
   ),
 );
 
