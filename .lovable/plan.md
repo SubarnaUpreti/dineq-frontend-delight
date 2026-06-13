@@ -1,125 +1,206 @@
+# DineQ — Full Frontend Overhaul Plan
 
-# DineQ — Mobile-First Restaurant Pre-Ordering PWA
+## Brutal review of the current app
 
-A premium, mobile-first customer app for pickup and dine-in ordering. Frontend only, mock data, production-quality UX. Built on the existing TanStack Start + Tailwind v4 + shadcn stack.
+**Homepage**
+- Greeting "HI AARAV 👋" + "What sounds good?" is fine, but the search bar is generic shadcn (thin border, low contrast). Doesn't feel premium.
+- Promo carousel is loud orange-gradient + flame icon — looks like a template banner, not a brand asset. Dots indicator is tiny and low-contrast.
+- Filter chips and category grid are functional but visually flat; emoji-style category tiles look childish for a "mature" product.
+- Restaurant cards are too tall (huge image + lots of padding). On a 390-wide phone you see ~1.5 cards per viewport — slow to browse.
+- "PICKUP / DINE-IN" pill badges are shouting (uppercase, two colors). Real apps use one subtle tag.
+- Rating, time, distance line is cramped; rating pill is green-on-green and visually heavy.
+- Footer "Made with care · DineQ" wastes a tap-target zone and there's no end-of-list state.
 
-## Design system
+**Bottom navigation**
+- 5 tabs (Home, Orders, Cart, Favorites, Profile) is one too many — Cart is the #1 offender because it duplicates the cart pill and steals a tab slot.
+- The bar uses solid white with a top border — no blur, no elevation, sits flat on photo content.
+- Active state is a small dot under the label — easy to miss.
+- **Critical:** the bar overlaps content (we already saw it clipping the + buttons on the menu). Padding is being added per-route instead of globally.
 
-A warm, appetizing food-tech palette — not generic AI purple. All tokens in `src/styles.css` under `@theme inline` + `:root`.
+**Restaurant page**
+- Hero image is huge (>40vh), pushes the menu way down. Real apps cap at ~28vh and overlay info.
+- Info card floats over the hero awkwardly and stacks badges (Nepali / Tibetan / Asian / PICKUP / DINE-IN) into a messy second row.
+- Category tab strip ("Popular / Steamed Momo / Fried Momo / Sides") is fine but doesn't stick on scroll, so users lose context.
+- Menu cards are full-width image cards — fine for "featured" but wasteful for a 20-item menu. Standard pattern is compact rows (text left, square thumbnail right).
+- The orange "+" FAB on every card is visually noisy when you have 10 cards stacked.
+- No section jump / sticky category nav, no search-within-restaurant.
 
-- Primary: warm amber/orange `oklch(0.72 0.17 55)` (CTA, prices, active states)
-- Background: soft cream `oklch(0.985 0.008 80)`
-- Foreground: deep charcoal `oklch(0.18 0.01 60)`
-- Surface: white cards with `oklch(0.92 0.01 70)` borders and soft shadows
-- Success green, error red, warning amber as semantic tokens
-- Veg / Non-Veg / Egg dietary dot tokens
-- Typography: Manrope (display, 600/700/800) + Inter (body, 400/500/600), loaded via `<link>` in `__root.tsx`, registered as `--font-display` / `--font-sans` in `@theme`
-- Radius scale tuned for soft cards (xl = 16px, 2xl = 20px, pill for chips/buttons)
-- Custom shadows: `--shadow-card`, `--shadow-pop`, `--shadow-sheet`
-- Motion: short, spring-y; respect `prefers-reduced-motion`
+**Item customizer sheet**
+- Drawer takes 96vh now (we just bumped it) but hero image still eats a quarter of it. Modifier groups have weak hierarchy — required vs optional isn't obvious.
+- Quantity + Add-to-cart CTA at the bottom is a plain button, not a sticky pay-style bar with running total.
 
-## Tech approach
+**Cart / Checkout / Payment / Tracking**
+- Cart items are plain rows, no thumbnails, no per-item notes affordance.
+- Checkout is a single long form; no clear "Pickup vs Dine-in" segmented control at the top, no tip selector, no promo code slot styled like a real app.
+- Payment screen is barebones; no method icons, no saved methods, no "Pay Rs X" sticky CTA.
+- Order tracking has no visual timeline / progress beads — just text states.
 
-- TanStack Start file-based routes under `src/routes/`
-- shadcn primitives (Sheet, Dialog, Drawer, Button, Input, Badge, Tabs, ScrollArea, Skeleton, Toaster)
-- `framer-motion` for sheet, fly-to-cart, confetti, status transitions
-- Cart state: Zustand store in `src/lib/store/cart.ts` with restaurant-scope conflict logic
-- Favorites + mock user: small Zustand stores persisted to `localStorage`
-- Mock data: `src/lib/mock/{restaurants,menus,orders,promos}.ts` with realistic names, prices in Rs., prep times, ratings, dietary flags
-- Hero food imagery: generated assets in `src/assets/` (category icons + 6 restaurant covers + ~12 dish images), imported as ES6
-- PWA shell: manifest + icons only (manifest-only path per PWA skill — no service worker), `PwaInstallPrompt` UI on the home screen
-- Safe-area: `env(safe-area-inset-*)` paddings on shell, bottom nav, cart pill
-- Accessibility: 44px tap targets, focus rings, aria labels on icon buttons, reduced-motion fallbacks
+**System-level**
+- Typography: one sans (Inter/system) across everything. No display face → nothing feels branded.
+- Spacing: ad-hoc — some screens use 16px gutter, some 12, some 24. No rhythm.
+- Colors: orange accent is used for promo, FAB, and CTA — all at the same saturation, so nothing wins. No proper neutral surface scale.
+- Empty states are text-only ("No favorites yet"). Loading states are bare shadcn skeletons.
+- No micro-interactions (button press, add-to-cart bounce, tab switch). Fly-to-cart exists but the cart pill itself doesn't react.
+- Many tap targets < 44px (filter chips, rating pill, share/heart buttons in restaurant header).
 
-## Routes
+---
 
+## Design direction
+
+The standard, widely-used aesthetic for modern food-ordering apps (Uber Eats / DoorDash / Wolt / Zomato / Swiggy / Deliveroo) is:
+
+- Light, near-white background with warm off-white surfaces
+- Big, edge-to-edge food photography
+- One confident warm accent (we'll keep orange but tune it)
+- Strong sans display for headings, neutral sans for body
+- Compact list rows for menus, hero cards only for featured/promo
+- Sticky bottom CTA on action screens
+- Generous 16px gutters, 12px vertical rhythm, 16/20/24 radii
+
+**Tokens (`src/styles.css`)**
+
+```text
+--background:        oklch(0.99 0.005 60)     /* warm white */
+--surface:           oklch(0.97 0.01 60)      /* card */
+--surface-elevated:  oklch(1.00 0 0)
+--foreground:        oklch(0.18 0.01 60)
+--muted-foreground:  oklch(0.50 0.01 60)
+--border:            oklch(0.92 0.005 60)
+--primary:           oklch(0.69 0.19 42)      /* refined orange */
+--primary-pressed:   oklch(0.62 0.20 42)
+--success:           oklch(0.62 0.14 150)
+--warning:           oklch(0.78 0.16 75)
+--destructive:       oklch(0.58 0.22 25)
+--radius-sm: 10px; --radius: 16px; --radius-lg: 20px; --radius-xl: 28px
+--shadow-card: 0 1px 2px rgba(20,14,8,.04), 0 8px 24px -12px rgba(20,14,8,.08)
+--shadow-float: 0 8px 24px -8px rgba(20,14,8,.18)
 ```
-src/routes/
-  __root.tsx               shell, fonts, manifest links, Toaster, AppShell wrapper
-  index.tsx                Home (search, promos, filters, categories, restaurant feed)
-  restaurant.$id.tsx       Restaurant menu browser
-  cart.tsx                 Cart + checkout (fulfillment, identity, promo, totals)
-  pay.$orderId.tsx         Mock payment gateway
-  pay.$orderId.verify.tsx  Verification + success celebration
-  orders.index.tsx         Orders list (active + past + empty)
-  orders.$id.tsx           Order tracking detail (timeline)
-  favorites.tsx            Saved restaurants
-  profile.tsx              Profile + settings
-```
 
-Item customizer is a global Sheet triggered from menu cards (not a route).
+**Type**
+- Display: "Plus Jakarta Sans" 700/800 for H1/H2 and prices.
+- Body/UI: "Inter" 400/500/600.
+- Loaded via Google Fonts link in `__root.tsx` head.
+- Sizes: H1 28/34, H2 22/28, H3 18/24, body 15/22, small 13/18, micro 12/16. Tabular nums on prices.
 
-## Component inventory
+**Spacing & radii**
+- 4-pt grid, gutters 16px, section spacing 24px, card padding 14px, sticky safe-areas respect `env(safe-area-inset-bottom)`.
 
-Shell & nav
-- `AppShell` — safe-area, hides bottom nav on `/cart`, `/pay/*`
-- `BottomTabBar` — 5 tabs, filled active icons, primary dot indicator, spring tap
-- `CartPill` — floating sticky, item count + subtotal + CTA, slides in when cart > 0
-- `ActiveOrderBar` — floating above cart pill when an order is active
-- `PwaInstallPrompt` — dismissible bottom card on Home
+---
 
-Home
-- `StickySearchBar`, `PromoCarousel` (embla), `FilterChipRow`, `CategoryGrid`, `RestaurantCard`, `RestaurantFeed`
+## Bottom nav: 4 tabs + floating cart
 
-Restaurant
-- `RestaurantHeader` (parallax cover), `MenuCategoryNav` (sticky, scroll-spy), `MenuSectionHeader`, `MenuItemCard` (2-col grid, image-first), `DietaryBadge`, `QuickAddButton`
+- Tabs: **Home · Orders · Favorites · Profile** (Cart removed from tabs).
+- Bar: blurred translucent surface (`bg-background/80 backdrop-blur`) + 1px hairline + soft top shadow, respects safe-area.
+- Active state: filled icon + label color = primary, plus 3px rounded indicator above the icon.
+- 56px height, 11px label, 24px icon, ≥44px tap targets.
+- **Persistent floating cart pill** (already exists as `CartPill`) anchored above the tab bar bottom-right when items > 0, with item count + total and slide-up entrance. Hidden on `/cart`, `/pay/*`.
+- Global `AppShell` adds `pb-[calc(56px+env(safe-area-inset-bottom)+12px)]` to the main scroll area so no route ever needs its own bottom padding hack.
 
-Customizer
-- `ItemCustomizerSheet` — hero image, variant pills, modifier groups with min/max + "✓ MET", kitchen-notes textarea, quantity stepper, dynamic Add-to-Cart total
-- `CartConflictDialog` — clear-and-add vs keep
+---
 
-Cart / checkout
-- `CartLineItem`, `FulfillmentToggle`, `IdentityForm`, `PromoCodeField`, `CostBreakdown`, `MinOrderProgress`, `CheckoutButton` (loading + idempotent)
+## Screen-by-screen rebuild
 
-Payment
-- `MockGatewayScreen` (generic, eSewa/Khalti/Fonepay inspired — no copied branding), `VerifyingScreen` (rotating reassurance copy), `PaymentSuccess` (confetti + chime placeholder + CTA)
+**Home (`routes/index.tsx`, `components/home/*`)**
+- Sticky top bar: avatar + "Hi, Aarav" left, location chip ("Kathmandu ▾") right.
+- Search: large pill input, 48px tall, soft surface, leading icon, voice icon trailing.
+- Promo carousel: 16:9 cards, 90% width peek, dark gradient overlay, custom dot indicator (active = 16px bar). Cap at 3 slides.
+- Categories: 4-per-row horizontal scroller of round image chips (no emoji), 64px circle + 12px label.
+- Filters: horizontal chip row, segmented look, sticky under header on scroll.
+- Restaurant list: compact card — 16:10 image with single status badge top-left, heart top-right, then 12px gap to a 2-line meta block (Name • cuisines • rating·time·distance row). Closed state = grayscale image + amber "Opens 5:00 PM" pill.
+- End-of-list "You've seen all 8 restaurants" state.
 
-Orders
-- `OrderCard`, `OrderStatusTimeline` (Placed → Accepted → Preparing → Ready), `OrderItemsSummary`, `HelpContactCard`
+**Restaurant (`routes/restaurant.$id.tsx`)**
+- Collapsing hero: 28vh image with linear black-fade bottom; floating back/share/heart as 40px circular glass buttons.
+- Info block: name + rating inline, single meta row, expandable cuisines, "Open now" dot. Remove duplicate PICKUP/DINE-IN — show service modes as one neutral chip.
+- Sticky category strip under hero on scroll (`position: sticky; top: 0`) with active underline + smooth scroll-to-section.
+- Menu rows: compact horizontal card — title, 2-line desc, price (tabular), veg/non-veg dot, 80×80 rounded thumbnail right, small ghost "+" button overlapping bottom-right of thumbnail (not orange FAB on every card). "Popular" badge becomes a tiny tag inline with title.
+- Search-within-menu icon in sticky strip.
 
-Favorites & profile
-- `FavoriteRestaurantCard`, `EmptyFavorites`, `ProfileHeader`, `ProfileMenuList`, `SettingsRow`
+**Item customizer (`components/menu/ItemCustomizerSheet.tsx`)**
+- Drawer 92vh, drag handle, hero 24vh capped 240px.
+- Title + price big, description muted, allergen line.
+- Modifier groups: clear header "Choose 1 (Required)" / "Add extras (Optional, max 3)", segmented radios for single-choice, list checkboxes for multi. Selected = filled chip.
+- Special instructions textarea collapsible.
+- Sticky footer: qty stepper left, "Add 2 · Rs 480" primary button right (full width split), tabular nums, haptic-ish press scale.
 
-System
-- `EmptyState`, `ErrorState`, `Skeleton*` (card/list/menu), `ConfirmDialog`, sonner toasts, `FlyToCart` animation helper, `Confetti`
+**Cart (`routes/cart.tsx`)**
+- Grouped by restaurant. Each row: 56px thumb, name + modifier summary, qty stepper, price right-aligned (tabular).
+- Inline "Add note" affordance, swipe-to-delete with confirm.
+- Summary card: subtotal, taxes, total in large display weight.
+- Promo code as collapsible inline row with success state.
+- Sticky bottom "Checkout · Rs 1,240" primary button.
+- Empty: illustration + "Your cart is empty" + CTA "Browse restaurants".
 
-## Interactions & UX details
+**Checkout (`routes/pay.$orderId.tsx` and pre-pay step in cart flow)**
+- Top segmented control: Pickup | Dine-in (single source of truth, no separate badges).
+- Pickup time selector (ASAP / schedule chips).
+- Contact (name + phone) auto-filled from profile.
+- Tip selector chips (0 / 5% / 10% / 15% / custom).
+- Order summary collapsible.
+- Sticky "Place order · Rs X" CTA.
 
-- Fly-to-cart: snapshot the tapped image, animate arc to cart pill, bounce pill on arrival
-- Sheet: drag-to-close, snap points, top corners 24px, background scrim
-- Sticky category nav: highlights active section on scroll, smooth-scrolls on tap
-- Promo carousel: auto-advance with pause-on-interaction, dot indicator
-- Reduced motion: swap arcs/confetti for fades, disable parallax
-- Toasts for add-to-cart, favorite, promo, errors
-- Skeletons on initial home, menu, orders loads (simulated with short delays for realism)
-- Empty states for cart, favorites, orders, search-no-results — each with illustration glyph + helpful CTA
-- Disabled states: closed restaurants, sold-out items, unmet required modifiers, sub-minimum cart, in-flight checkout
-- Min 44px tap targets, visible focus rings, semantic headings per route, route-specific `head()` metadata
+**Payment (`routes/pay.$orderId.tsx`)**
+- Method tiles with real icons (eSewa / Khalti / Card / Cash on pickup). Selected = primary border + check.
+- Saved method appears at top if exists.
+- Sticky "Pay Rs X" CTA, loading state replaces button content (not a modal spinner).
+- Verify step: large success/processing icon, 1-line status, ghost "Go to order" CTA.
 
-## Mock data shape
+**Order tracking (`routes/orders.$id.tsx`)**
+- Hero: restaurant name + order code.
+- Vertical timeline of states (Placed → Accepted → Preparing → Ready for pickup → Picked up) with animated active bead, completed = check.
+- ETA card with countdown.
+- Itemized summary collapsible.
+- Sticky bottom: "Call restaurant" + "Get directions" (for pickup).
+- Orders index: cards with status pill, last-updated relative time, swipe to reorder.
 
-- 8 restaurants across cuisines (Momo, Pizza, Burger, Coffee, Sushi, Biryani, Bakery, Drinks) with cover, logo, rating, prep time, open hours, pickup/dine-in flags, min order, cuisine tags
-- Each restaurant: 4–6 categories, 12–20 items with description, price (Rs.), dietary, variants, modifier groups (some required), popularity flag
-- 3 promo codes (percent, flat, free-item) with validation messages
-- Seed orders: 1 active (Preparing) + 2 past
+**Empty / loading / error states (`components/common/*`)**
+- New `EmptyState` with custom illustrations (simple line drawings on warm surface) for: no favorites, no orders, no cart, no search results, restaurant closed, network error.
+- Skeletons: shimmer animation, match real card silhouettes exactly (restaurant card skeleton ≠ generic grey block).
+- Toasts (sonner) restyled: warm surface, primary icon, swipe to dismiss.
 
-## Out of scope (frontend-only build)
+**Micro-interactions**
+- Buttons: `active:scale-[0.97] transition-transform` globally on primary CTAs.
+- Add-to-cart: existing fly-to-cart kept; cart pill pulses + count rolls up.
+- Tab switch: indicator slides with spring (framer-motion `layoutId`).
+- Sheet/drawer: spring easing, snap points where useful.
+- Heart toggle: scale-bounce on tap.
 
-- No backend, auth, or Lovable Cloud
-- No real payment SDK — mock gateway only
-- No service worker / offline (manifest-only PWA per skill)
-- No push notifications
+**Accessibility**
+- All icon-only buttons get `aria-label`.
+- Contrast checked against AA (orange CTAs use white text only on `--primary` solid).
+- Min 44px tap targets enforced on chips, heart, back, +.
+- Focus rings via `:focus-visible` with primary outline.
 
-## Build order
+**PWA polish**
+- `manifest.webmanifest` already exists; refresh name "DineQ", short_name "DineQ", theme_color = primary, background_color = background, maskable icon, `display: standalone`.
+- Apple touch icon + status-bar style meta in `__root.tsx`.
+- `PwaInstallPrompt` restyled to match new design language, dismissible, remembered in localStorage.
+- No service worker / offline behavior added (out of scope, per skill guidance).
 
-1. Tokens, fonts, AppShell, BottomTabBar, CartPill, manifest
-2. Mock data + Zustand stores (cart, favorites, orders, user)
-3. Home screen end-to-end
-4. Restaurant menu + item customizer sheet + cart conflict
-5. Cart / checkout
-6. Mock payment + verify + success
-7. Orders list + tracking detail + ActiveOrderBar
-8. Favorites + Profile
-9. Generate hero/category/dish images, swap placeholders
-10. Polish pass: empty/error/loading states, reduced-motion, a11y, micro-interactions, senior-designer review sweep
+---
 
+## Execution order (single overhaul, both Home and Restaurant first, then funnel)
+
+1. **Foundations** — fonts in `__root.tsx`, tokens in `src/styles.css`, shadcn variants tightened, global `AppShell` safe-area padding, new `BottomTabBar` (4 tabs), refined `CartPill` (floating, always-on when items>0).
+2. **Home + Restaurant menu + Customizer** (highest-traffic surfaces) — rebuild components listed above.
+3. **Cart → Checkout → Payment → Tracking** funnel — rebuild in conversion order.
+4. **Favorites, Profile, Orders index** — bring to parity.
+5. **Empty / loading / error states + micro-interactions + a11y pass + PWA manifest polish**.
+6. **Verify**: load every route at 390×844 in the preview, confirm no overlap with bottom bar, no hydration warnings, no console errors, tap-targets visually ≥44px.
+
+## Guardrails (won't break existing logic)
+
+- No changes to Zustand stores (`cart`, `orders`, `favorites`, `user`) shape, persistence, or `skipHydration` setup.
+- No changes to mock data shape in `src/lib/mock/data.ts` beyond adding optional fields if needed.
+- No route additions/removals; only file contents change.
+- No server function changes.
+- `PersistentStoreHydrator` in `AppShell` stays.
+- Keep `FlyToCartLayer` behavior; only restyle target.
+
+## Technical notes
+
+- Fonts: Google Fonts `<link rel="stylesheet">` in `__root.tsx` head with `display=swap`. Tailwind v4 `@theme` block in `styles.css` maps `--font-display` and `--font-sans`.
+- `framer-motion` is already a dep — use for tab indicator and sheet springs. No new packages required.
+- Sticky category strip: native CSS `position: sticky` inside the scroll container; scroll-spy via `IntersectionObserver` hook in `src/hooks/useScrollSpy.ts` (new).
+- Safe-area: single utility class `.safe-bottom { padding-bottom: calc(56px + env(safe-area-inset-bottom) + 12px); }` applied once in `AppShell`, removing per-route `pb-48` hacks.
+- All color usage migrated to tokens — zero `text-white` / `bg-black` / hex literals in components.

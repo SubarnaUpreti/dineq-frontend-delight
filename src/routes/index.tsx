@@ -34,6 +34,12 @@ function HomePage() {
   const [filters, setFilters] = useState<string[]>([]);
   const [category, setCategory] = useState<string | null>(null);
   const user = useUser((s) => s.user);
+  const greeting = useMemo(() => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 17) return "Good afternoon";
+    return "Good evening";
+  }, []);
 
   const filtered = useMemo(() => {
     let list = restaurants.slice();
@@ -69,15 +75,18 @@ function HomePage() {
     <div className="flex flex-col">
       {/* Sticky search header */}
       <header className="safe-pt sticky top-0 z-20 bg-background/85 backdrop-blur-xl">
-        <div className="px-4 pb-2 pt-3">
+        <div className="px-4 pb-3 pt-3">
           <div className="flex items-center justify-between gap-3 pb-3">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Hi {user.name?.split(" ")[0] || "there"} 👋
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                {greeting}, {user.name?.split(" ")[0] || "there"}
               </p>
-              <h1 className="font-display text-[22px] font-extrabold leading-tight">
+              <h1 className="font-display text-[24px] font-extrabold leading-tight tracking-tight">
                 What sounds good?
               </h1>
+            </div>
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-base font-extrabold text-primary-foreground shadow-card">
+              {(user.name?.[0] || "G").toUpperCase()}
             </div>
           </div>
           <div className="relative">
@@ -86,7 +95,7 @@ function HomePage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search momo, pizza, cafe…"
-              className="h-12 w-full rounded-full border border-border bg-surface pl-11 pr-11 text-sm font-medium placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="h-12 w-full rounded-2xl border border-border bg-surface pl-11 pr-11 text-sm font-medium placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             {query && (
               <button
@@ -155,9 +164,16 @@ function HomePage() {
         )}
       </section>
 
-      <div className="px-4 pb-2 pt-10 text-center text-[11px] text-muted-foreground">
-        Made with care · DineQ
-      </div>
+      {filtered.length > 0 && (
+        <div className="px-4 pb-2 pt-8 text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            You're all caught up
+          </p>
+          <p className="mt-1 text-[11px] text-muted-foreground/80">
+            {filtered.length} {filtered.length === 1 ? "place" : "places"} near you
+          </p>
+        </div>
+      )}
     </div>
   );
 }
