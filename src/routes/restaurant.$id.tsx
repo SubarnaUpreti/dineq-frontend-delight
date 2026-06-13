@@ -253,7 +253,7 @@ function MenuItemCard({
           <motion.span
             whileTap={{ scale: 0.85 }}
             className={cn(
-              "absolute -bottom-3 right-3 grid h-9 w-9 place-items-center rounded-full shadow-pill ring-4 ring-card transition",
+              "absolute -bottom-3 right-3 z-10 grid h-9 w-9 place-items-center rounded-full shadow-pill ring-4 ring-card transition",
               inCart ? "bg-success text-success-foreground" : "bg-primary text-primary-foreground",
             )}
             aria-hidden
