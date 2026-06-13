@@ -94,7 +94,7 @@ export function ItemCustomizerSheet({
         <DrawerPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />
         <DrawerPrimitive.Content
           aria-describedby={undefined}
-          className="fixed inset-x-0 bottom-0 z-50 mx-auto flex h-[92vh] w-full max-w-[480px] flex-col overflow-hidden rounded-t-[28px] bg-background shadow-sheet outline-none sm:max-w-[520px]"
+          className="fixed inset-x-0 bottom-0 z-50 mx-auto flex h-[96vh] w-full max-w-[480px] flex-col overflow-hidden rounded-t-[28px] bg-background shadow-sheet outline-none sm:max-w-[520px]"
         >
           <DrawerPrimitive.Title className="sr-only">{item?.name ?? "Customize"}</DrawerPrimitive.Title>
           {item && (
