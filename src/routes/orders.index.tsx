@@ -95,8 +95,9 @@ function OrderCard({ o }: { o: Order }) {
             <div className="min-w-0">
               <p className="truncate font-display text-sm font-bold">{o.restaurantName}</p>
               <p className="text-[11px] text-muted-foreground">
-                {o.number} · {new Date(o.placedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                {o.number} · {formatDate(o.placedAt)}
               </p>
+
             </div>
             <span className={cn("rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider", s.color)}>
               {s.label}
