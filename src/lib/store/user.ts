@@ -25,6 +25,6 @@ export const useUser = create<UserState>()(
       login: (u) => set({ user: { ...u, loggedIn: true } }),
       logout: () => set({ user: { name: "", phone: "", loggedIn: false } }),
     }),
-    { name: "dineq.user", storage: safeStorage },
+    { name: "dineq.user", storage: safeStorage, skipHydration: true },
   ),
 );

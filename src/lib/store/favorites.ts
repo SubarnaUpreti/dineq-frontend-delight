@@ -19,6 +19,6 @@ export const useFavorites = create<FavState>()(
       },
       has: (id) => get().ids.includes(id),
     }),
-    { name: "dineq.favorites", storage: safeStorage },
+    { name: "dineq.favorites", storage: safeStorage, skipHydration: true },
   ),
 );
