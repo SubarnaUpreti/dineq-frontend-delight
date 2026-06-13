@@ -1,0 +1,25 @@
+{
+  "name": "DineQ — Order ahead",
+  "short_name": "DineQ",
+  "description": "Pre-order from your favorite restaurants for pickup or dine-in.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fbf8f1",
+  "theme_color": "#f07a1f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
