@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
 import { restaurants, categories } from "@/lib/mock/data";
 import { PromoCarousel } from "@/components/home/PromoCarousel";
