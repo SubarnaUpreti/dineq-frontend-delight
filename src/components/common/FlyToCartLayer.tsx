@@ -18,10 +18,11 @@ export function FlyToCartLayer() {
     return () => window.removeEventListener("dineq:fly", handler);
   }, []);
 
-  const target = typeof document !== "undefined" ? document.getElementById("cart-pill-target") : null;
+  const isBrowser = typeof window !== "undefined";
+  const target = isBrowser ? document.getElementById("cart-pill-target") : null;
   const tRect = target?.getBoundingClientRect();
-  const targetX = tRect ? tRect.left + tRect.width / 2 - 28 : window.innerWidth / 2 - 28;
-  const targetY = tRect ? tRect.top + tRect.height / 2 - 28 : window.innerHeight - 120;
+  const targetX = tRect ? tRect.left + tRect.width / 2 - 28 : (isBrowser ? window.innerWidth / 2 - 28 : 0);
+  const targetY = tRect ? tRect.top + tRect.height / 2 - 28 : (isBrowser ? window.innerHeight - 120 : 0);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[60]">
