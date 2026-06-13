@@ -41,9 +41,14 @@ export function RestaurantCard({ r }: { r: Restaurant }) {
             strokeWidth={2.2}
           />
         </motion.button>
-        <div className="absolute left-3 top-3 flex gap-1.5">
-          {r.pickup && <Badge>Pickup</Badge>}
-          {r.dineIn && <Badge>Dine-in</Badge>}
+        <div className="absolute left-3 top-3">
+          {r.pickup && r.dineIn ? (
+            <Badge>Pickup · Dine-in</Badge>
+          ) : r.pickup ? (
+            <Badge>Pickup</Badge>
+          ) : r.dineIn ? (
+            <Badge>Dine-in</Badge>
+          ) : null}
         </div>
       </div>
       <div className="px-4 py-3.5">
