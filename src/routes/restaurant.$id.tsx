@@ -1,14 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Clock, Heart, MapPin, Plus, Share2 } from "lucide-react";
+import { ArrowLeft, Clock, Heart, MapPin, Minus, Plus, Share2 } from "lucide-react";
 import { getMenu, getRestaurant } from "@/lib/mock/data";
 import { RatingPill } from "@/components/common/RatingPill";
 import { DietaryBadge } from "@/components/common/DietaryBadge";
 import { ItemCustomizerSheet } from "@/components/menu/ItemCustomizerSheet";
 import { useFavorites } from "@/lib/store/favorites";
-import { useCart } from "@/lib/store/cart";
+import { buildLineFromSelections, useCart } from "@/lib/store/cart";
 import { formatRs } from "@/lib/format";
+import { flyToCart } from "@/lib/fly-to-cart";
 import { haptic } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { MenuItem } from "@/lib/mock/types";
@@ -220,18 +221,63 @@ function MenuItemRow({
   item: MenuItem;
   onOpen: (triggerEl: HTMLElement) => void;
 }) {
-  const inCart = useCart((s) => s.lines.some((l) => l.itemId === item.id));
-  const ref = useRef<HTMLImageElement>(null);
-  const handleClick = () => {
-    onOpen(ref.current as unknown as HTMLElement);
+  const lines = useCart((s) => s.lines.filter((l) => l.itemId === item.id));
+  const addLine = useCart((s) => s.addLine);
+  const setQty = useCart((s) => s.setQty);
+  const totalQty = lines.reduce((s, l) => s + l.qty, 0);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  const hasOptions =
+    (item.variants && item.variants.length > 0) ||
+    (item.modifierGroups && item.modifierGroups.length > 0);
+
+  const openSheet = () => onOpen(imgRef.current as unknown as HTMLElement);
+
+  const quickAdd = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (hasOptions) {
+      openSheet();
+      return;
+    }
+    const build = buildLineFromSelections(item, { modifierSelections: {}, qty: 1 });
+    const res = addLine(item, build);
+    if (res === "added") {
+      haptic(15);
+      flyToCart(imgRef.current, item.image);
+    }
   };
+
+  const inc = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (hasOptions) {
+      // Re-open customizer so the user can vary toppings — Zomato-style "Add another"
+      openSheet();
+      return;
+    }
+    const line = lines[0];
+    if (!line) return quickAdd(e);
+    setQty(line.lineId, line.qty + 1);
+    haptic(10);
+  };
+
+  const dec = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Decrement most recent line
+    const line = lines[lines.length - 1];
+    if (!line) return;
+    setQty(line.lineId, line.qty - 1);
+    haptic(10);
+  };
+
   return (
     <li>
-      <button
-        onClick={handleClick}
-        className="tap group flex w-full items-stretch gap-3 p-3 text-left transition active:bg-surface-2/60"
-      >
-        <div className="min-w-0 flex-1 py-0.5">
+      <div className="group relative flex w-full items-stretch gap-3 p-3 transition">
+        {/* Tap target for the text/details area opens the customizer/details */}
+        <button
+          type="button"
+          onClick={openSheet}
+          className="tap min-w-0 flex-1 py-0.5 text-left"
+        >
           <div className="flex items-center gap-1.5">
             <DietaryBadge diet={item.diet} />
             {item.popular && (
@@ -245,29 +291,70 @@ function MenuItemRow({
             {item.description}
           </p>
           <p className="mt-1.5 text-[14px] font-extrabold text-foreground">{formatRs(item.price)}</p>
-        </div>
+        </button>
+
         <div className="relative shrink-0">
-          <div className="h-20 w-20 overflow-hidden rounded-xl bg-surface-2">
+          <button
+            type="button"
+            onClick={openSheet}
+            className="tap block h-20 w-20 overflow-hidden rounded-xl bg-surface-2"
+            aria-label={`View ${item.name}`}
+          >
             <img
-              ref={ref}
+              ref={imgRef}
               src={item.image}
               alt={item.name}
               loading="lazy"
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
             />
-          </div>
-          <motion.span
-            whileTap={{ scale: 0.85 }}
-            className={cn(
-              "absolute -bottom-2 left-1/2 z-10 grid h-8 w-8 -translate-x-1/2 place-items-center rounded-full shadow-pill ring-[3px] ring-card transition",
-              inCart ? "bg-success text-success-foreground" : "bg-primary text-primary-foreground",
-            )}
-            aria-hidden
-          >
-            <Plus className="h-4 w-4" strokeWidth={2.8} />
-          </motion.span>
+          </button>
+
+          {totalQty === 0 ? (
+            <motion.button
+              type="button"
+              onClick={quickAdd}
+              whileTap={{ scale: 0.88 }}
+              className="tap absolute -bottom-2 left-1/2 z-10 inline-flex h-8 -translate-x-1/2 items-center gap-1 rounded-full bg-primary px-3 text-[12px] font-extrabold uppercase tracking-wide text-primary-foreground shadow-pill ring-[3px] ring-card"
+            >
+              <Plus className="h-3.5 w-3.5" strokeWidth={3} />
+              Add
+            </motion.button>
+          ) : (
+            <motion.div
+              layout
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 380, damping: 26 }}
+              className="absolute -bottom-2 left-1/2 z-10 inline-flex h-8 -translate-x-1/2 items-center gap-1 rounded-full bg-primary text-primary-foreground shadow-pill ring-[3px] ring-card"
+            >
+              <button
+                type="button"
+                onClick={dec}
+                aria-label="Decrease"
+                className="tap grid h-8 w-8 place-items-center rounded-full active:scale-90"
+              >
+                <Minus className="h-3.5 w-3.5" strokeWidth={3} />
+              </button>
+              <span className="min-w-[14px] text-center text-[13px] font-extrabold tabular-nums">
+                {totalQty}
+              </span>
+              <button
+                type="button"
+                onClick={inc}
+                aria-label="Increase"
+                className="tap grid h-8 w-8 place-items-center rounded-full active:scale-90"
+              >
+                <Plus className="h-3.5 w-3.5" strokeWidth={3} />
+              </button>
+            </motion.div>
+          )}
+          {hasOptions && totalQty === 0 && (
+            <span className="absolute -bottom-[18px] left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Customizable
+            </span>
+          )}
         </div>
-      </button>
+      </div>
     </li>
   );
 }
