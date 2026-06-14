@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getActiveOrders, getPastOrders, useOrders } from "@/lib/store/orders";
+import { OrderCardSkeleton } from "@/components/common/Skeletons";
 import { EmptyState } from "@/components/common/EmptyState";
 import { formatRs } from "@/lib/format";
 import { cn } from "@/lib/utils";
