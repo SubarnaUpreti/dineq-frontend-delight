@@ -1,10 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Heart, MapPin, Minus, Plus, Share2 } from "lucide-react";
 import { getMenu, getRestaurant } from "@/lib/mock/data";
 import { RatingPill } from "@/components/common/RatingPill";
 import { DietaryBadge } from "@/components/common/DietaryBadge";
+import { MenuRowSkeleton } from "@/components/common/Skeletons";
 import { ItemCustomizerSheet } from "@/components/menu/ItemCustomizerSheet";
 import { useFavorites } from "@/lib/store/favorites";
 import { buildLineFromSelections, useCart } from "@/lib/store/cart";
