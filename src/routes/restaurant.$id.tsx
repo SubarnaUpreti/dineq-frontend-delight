@@ -365,10 +365,11 @@ function MenuItemRow({
             </motion.div>
           )}
           {hasOptions && totalQty === 0 && (
-            <span className="absolute -bottom-[18px] left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <span className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
               Customizable
             </span>
           )}
+
         </div>
       </div>
     </li>
