@@ -52,6 +52,12 @@ function RestaurantPage() {
     return Array.from(map.entries()).filter(([, list]) => list.length > 0);
   }, [menu, r.categories]);
 
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(t);
+  }, []);
+
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const [active, setActive] = useState(grouped[0]?.[0] ?? "");
   const [sheetItem, setSheetItem] = useState<MenuItem | null>(null);
