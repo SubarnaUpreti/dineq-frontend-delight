@@ -36,9 +36,12 @@ function HomePage() {
   const [category, setCategory] = useState<string | null>(null);
   const user = useUser((s) => s.user);
   const [greeting, setGreeting] = useState("Welcome back");
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const h = new Date().getHours();
     setGreeting(h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
+    const t = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(t);
   }, []);
 
   const filtered = useMemo(() => {
