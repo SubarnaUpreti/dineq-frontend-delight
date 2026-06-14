@@ -88,7 +88,10 @@ export function RestaurantCard({ r }: { r: Restaurant }) {
           <h3 className="min-w-0 truncate font-display text-[17px] font-extrabold leading-tight">
             {r.name}
           </h3>
-          <RatingPill rating={r.rating} className="bg-success text-white" />
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-success px-1.5 py-0.5 text-[12px] font-bold text-white tabular-nums">
+            <Star className="h-3 w-3 fill-white text-white" strokeWidth={0} />
+            {r.rating.toFixed(1)}
+          </span>
         </div>
         <div className="mt-1 flex items-center justify-between gap-2 text-[12.5px] text-muted-foreground">
           <p className="truncate">{r.cuisines.join(", ")}</p>
