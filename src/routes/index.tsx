@@ -6,6 +6,7 @@ import { PromoCarousel } from "@/components/home/PromoCarousel";
 import { FilterChipRow } from "@/components/home/FilterChipRow";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { RestaurantCard } from "@/components/home/RestaurantCard";
+import { RestaurantCardSkeleton } from "@/components/common/Skeletons";
 import { PwaInstallPrompt } from "@/components/home/PwaInstallPrompt";
 import { EmptyState } from "@/components/common/EmptyState";
 import { useUser } from "@/lib/store/user";
