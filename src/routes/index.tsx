@@ -150,7 +150,15 @@ function HomePage() {
           </h2>
           <span className="text-xs text-muted-foreground">{filtered.length} places</span>
         </div>
-        {filtered.length === 0 ? (
+        {loading ? (
+          <ul className="space-y-3.5 px-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <li key={i}>
+                <RestaurantCardSkeleton />
+              </li>
+            ))}
+          </ul>
+        ) : filtered.length === 0 ? (
           <EmptyState
             emoji="🔍"
             title="Nothing matches"
