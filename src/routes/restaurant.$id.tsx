@@ -287,7 +287,7 @@ function MenuItemRow({
 
   return (
     <li>
-      <div className="group relative flex w-full items-stretch gap-3 p-3 transition">
+      <div className="group relative flex w-full items-stretch gap-3 p-3 pb-7 transition">
         {/* Tap target for the text/details area opens the customizer/details */}
         <button
           type="button"
