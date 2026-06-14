@@ -221,10 +221,11 @@ function MenuItemRow({
   item: MenuItem;
   onOpen: (triggerEl: HTMLElement) => void;
 }) {
-  const lines = useCart((s) => s.lines.filter((l) => l.itemId === item.id));
+  const allLines = useCart((s) => s.lines);
   const addLine = useCart((s) => s.addLine);
   const setQty = useCart((s) => s.setQty);
-  const totalQty = lines.reduce((s, l) => s + l.qty, 0);
+  const lines = useMemo(() => allLines.filter((l) => l.itemId === item.id), [allLines, item.id]);
+  const totalQty = useMemo(() => lines.reduce((s, l) => s + l.qty, 0), [lines]);
   const imgRef = useRef<HTMLImageElement>(null);
 
   const hasOptions =
