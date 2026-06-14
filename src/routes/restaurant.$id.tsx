@@ -1,14 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Clock, Heart, MapPin, Plus, Share2 } from "lucide-react";
+import { ArrowLeft, Clock, Heart, MapPin, Minus, Plus, Share2 } from "lucide-react";
 import { getMenu, getRestaurant } from "@/lib/mock/data";
 import { RatingPill } from "@/components/common/RatingPill";
 import { DietaryBadge } from "@/components/common/DietaryBadge";
 import { ItemCustomizerSheet } from "@/components/menu/ItemCustomizerSheet";
 import { useFavorites } from "@/lib/store/favorites";
-import { useCart } from "@/lib/store/cart";
+import { buildLineFromSelections, useCart } from "@/lib/store/cart";
 import { formatRs } from "@/lib/format";
+import { flyToCart } from "@/lib/fly-to-cart";
 import { haptic } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { MenuItem } from "@/lib/mock/types";
