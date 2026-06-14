@@ -1,10 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Heart, MapPin, Minus, Plus, Share2 } from "lucide-react";
 import { getMenu, getRestaurant } from "@/lib/mock/data";
 import { RatingPill } from "@/components/common/RatingPill";
 import { DietaryBadge } from "@/components/common/DietaryBadge";
+import { MenuRowSkeleton } from "@/components/common/Skeletons";
 import { ItemCustomizerSheet } from "@/components/menu/ItemCustomizerSheet";
 import { useFavorites } from "@/lib/store/favorites";
 import { buildLineFromSelections, useCart } from "@/lib/store/cart";
@@ -50,6 +51,12 @@ function RestaurantPage() {
     }
     return Array.from(map.entries()).filter(([, list]) => list.length > 0);
   }, [menu, r.categories]);
+
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(t);
+  }, []);
 
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const [active, setActive] = useState(grouped[0]?.[0] ?? "");
@@ -177,29 +184,37 @@ function RestaurantPage() {
 
       {/* Menu sections — compact horizontal rows, dense + scannable */}
       <div className="space-y-6 px-4 pb-32 pt-4">
-        {grouped.map(([cat, list]) => (
-          <section
-            key={cat}
-            ref={(el) => { sectionRefs.current[cat] = el; }}
-          >
-            <div className="mb-2 flex items-baseline justify-between">
-              <h2 className="font-display text-lg font-extrabold">{cat}</h2>
-              <span className="text-[11px] font-semibold text-muted-foreground">{list.length} items</span>
-            </div>
-            <ul className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-              {list.map((m) => (
-                <MenuItemRow
-                  key={m.id + cat}
-                  item={m}
-                  onOpen={(el) => {
-                    setTriggerEl(el);
-                    setSheetItem(m);
-                  }}
-                />
-              ))}
-            </ul>
-          </section>
-        ))}
+        {loading ? (
+          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <MenuRowSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          grouped.map(([cat, list]) => (
+            <section
+              key={cat}
+              ref={(el) => { sectionRefs.current[cat] = el; }}
+            >
+              <div className="mb-2 flex items-baseline justify-between">
+                <h2 className="font-display text-lg font-extrabold">{cat}</h2>
+                <span className="text-[11px] font-semibold text-muted-foreground">{list.length} items</span>
+              </div>
+              <ul className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+                {list.map((m) => (
+                  <MenuItemRow
+                    key={m.id + cat}
+                    item={m}
+                    onOpen={(el) => {
+                      setTriggerEl(el);
+                      setSheetItem(m);
+                    }}
+                  />
+                ))}
+              </ul>
+            </section>
+          ))
+        )}
       </div>
 
 

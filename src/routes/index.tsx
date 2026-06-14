@@ -6,6 +6,7 @@ import { PromoCarousel } from "@/components/home/PromoCarousel";
 import { FilterChipRow } from "@/components/home/FilterChipRow";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { RestaurantCard } from "@/components/home/RestaurantCard";
+import { RestaurantCardSkeleton } from "@/components/common/Skeletons";
 import { PwaInstallPrompt } from "@/components/home/PwaInstallPrompt";
 import { EmptyState } from "@/components/common/EmptyState";
 import { useUser } from "@/lib/store/user";
@@ -35,9 +36,12 @@ function HomePage() {
   const [category, setCategory] = useState<string | null>(null);
   const user = useUser((s) => s.user);
   const [greeting, setGreeting] = useState("Welcome back");
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const h = new Date().getHours();
     setGreeting(h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
+    const t = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(t);
   }, []);
 
   const filtered = useMemo(() => {
@@ -146,7 +150,15 @@ function HomePage() {
           </h2>
           <span className="text-xs text-muted-foreground">{filtered.length} places</span>
         </div>
-        {filtered.length === 0 ? (
+        {loading ? (
+          <ul className="space-y-3.5 px-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <li key={i}>
+                <RestaurantCardSkeleton />
+              </li>
+            ))}
+          </ul>
+        ) : filtered.length === 0 ? (
           <EmptyState
             emoji="🔍"
             title="Nothing matches"

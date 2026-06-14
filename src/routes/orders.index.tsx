@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getActiveOrders, getPastOrders, useOrders } from "@/lib/store/orders";
+import { OrderCardSkeleton } from "@/components/common/Skeletons";
 import { EmptyState } from "@/components/common/EmptyState";
 import { formatRs } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,12 @@ function OrdersPage() {
   const past = useMemo(() => getPastOrders(orders), [orders]);
   const [tab, setTab] = useState<"active" | "past">(active.length > 0 ? "active" : "past");
 
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(t);
+  }, []);
+
   const list = tab === "active" ? active : past;
 
   return (
@@ -54,7 +61,15 @@ function OrdersPage() {
       </header>
 
       <div className="px-4 pt-4">
-        {list.length === 0 ? (
+        {loading ? (
+          <ul className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <li key={i}>
+                <OrderCardSkeleton />
+              </li>
+            ))}
+          </ul>
+        ) : list.length === 0 ? (
           <EmptyState
             emoji="🍽️"
             title={tab === "active" ? "No active orders" : "No past orders yet"}
