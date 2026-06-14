@@ -1,8 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, Clock } from "lucide-react";
+import { Heart, Clock, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Restaurant } from "@/lib/mock/types";
-import { RatingPill } from "@/components/common/RatingPill";
 import { useFavorites } from "@/lib/store/favorites";
 import { haptic } from "@/lib/motion";
 import { cn } from "@/lib/utils";
