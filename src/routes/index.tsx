@@ -4,7 +4,9 @@ import { Search, X, Mic } from "lucide-react";
 import { restaurants } from "@/lib/mock/data";
 import { LocationHeader } from "@/components/home/LocationHeader";
 import { ServiceTabs } from "@/components/home/ServiceTabs";
+import { QuickActionsRail } from "@/components/home/QuickActionsRail";
 import { OfferStrip } from "@/components/home/OfferStrip";
+import { FeaturedHero } from "@/components/home/FeaturedHero";
 import { CollectionStrip } from "@/components/home/CollectionStrip";
 import { FilterChipRow } from "@/components/home/FilterChipRow";
 import { RestaurantCard } from "@/components/home/RestaurantCard";
@@ -102,11 +104,19 @@ function HomePage() {
 
       <PwaInstallPrompt />
 
-      <section className="mt-2">
+      <section className="mt-3">
+        <QuickActionsRail />
+      </section>
+
+      <section className="mt-7">
         <OfferStrip />
       </section>
 
-      <section className="mt-6">
+      <section className="mt-8">
+        <FeaturedHero />
+      </section>
+
+      <section className="mt-8">
         <CollectionStrip />
       </section>
 

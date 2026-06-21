@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, Clock, Star } from "lucide-react";
+import { Heart, Clock, Star, Bike, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Restaurant } from "@/lib/mock/types";
 import { useFavorites } from "@/lib/store/favorites";
@@ -30,6 +30,10 @@ export function RestaurantCard({ r }: { r: Restaurant }) {
   const offer = offerFor(r.id);
   const eta = `${r.prepMinutes[0]}–${r.prepMinutes[1]} min`;
   const p2 = priceForTwo(r.id);
+  const seed = r.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  const freeDelivery = seed % 3 !== 0;
+  const promoted = seed % 5 === 0;
+  const deliveryFee = freeDelivery ? 0 : 29 + (seed % 4) * 10;
 
   return (
     <Link
@@ -70,6 +74,15 @@ export function RestaurantCard({ r }: { r: Restaurant }) {
           />
         </motion.button>
 
+        {/* Top-left badges */}
+        <div className="absolute left-3 top-3 flex flex-col items-start gap-1.5">
+          {promoted && (
+            <span className="rounded-md bg-foreground/85 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-background backdrop-blur">
+              Promoted
+            </span>
+          )}
+        </div>
+
         {/* Offer banner */}
         {offer && r.open && (
           <div className="absolute bottom-3 left-3 text-white drop-shadow">
@@ -79,6 +92,14 @@ export function RestaurantCard({ r }: { r: Restaurant }) {
             <p className="text-[10.5px] font-bold uppercase tracking-wider opacity-95">
               {offer.above}
             </p>
+          </div>
+        )}
+
+        {/* ETA chip overlay */}
+        {r.open && (
+          <div className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-background/95 px-2 py-1 text-[11px] font-bold text-foreground shadow-card backdrop-blur">
+            <Clock className="h-3 w-3 text-primary" strokeWidth={2.8} />
+            {eta}
           </div>
         )}
       </div>
@@ -97,16 +118,27 @@ export function RestaurantCard({ r }: { r: Restaurant }) {
           <p className="truncate">{r.cuisines.join(", ")}</p>
           <p className="shrink-0 font-semibold">₹{p2} for two</p>
         </div>
-        <div className="my-2.5 h-px w-full border-t border-dashed border-border" />
-        <div className="flex items-center gap-2 text-[12px] font-semibold text-foreground/80">
-          <Clock className="h-3.5 w-3.5 text-success" strokeWidth={2.6} />
-          {eta}
-          <span className="text-muted-foreground/70">·</span>
-          <span className="text-muted-foreground">{r.distanceKm} km away</span>
-          {r.pickup && (
+        <div className="mt-2.5 flex items-center gap-2 text-[12px] font-semibold">
+          {freeDelivery ? (
+            <span className="inline-flex items-center gap-1 rounded-md bg-success/12 px-1.5 py-0.5 text-success">
+              <Bike className="h-3 w-3" strokeWidth={2.8} />
+              Free delivery
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-foreground/80">
+              <Bike className="h-3 w-3 text-foreground/60" strokeWidth={2.6} />
+              ₹{deliveryFee} delivery
+            </span>
+          )}
+          <span className="text-muted-foreground/60">·</span>
+          <span className="text-muted-foreground">{r.distanceKm} km</span>
+          {r.prepMinutes[1] <= 20 && (
             <>
-              <span className="text-muted-foreground/70">·</span>
-              <span className="text-primary">Pickup</span>
+              <span className="text-muted-foreground/60">·</span>
+              <span className="inline-flex items-center gap-0.5 text-warning-foreground">
+                <Zap className="h-3 w-3 fill-warning text-warning" strokeWidth={0} />
+                Fast
+              </span>
             </>
           )}
         </div>
